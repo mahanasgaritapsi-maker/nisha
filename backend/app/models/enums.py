@@ -1,0 +1,28 @@
+from enum import Enum
+
+
+class UserRole(str, Enum):
+    ADMIN = "ADMIN"
+    SELLER = "SELLER"
+
+
+class PaymentMethodType(str, Enum):
+    CARD_TO_CARD = "CARD_TO_CARD"
+    CRYPTO = "CRYPTO"
+    EXTERNAL_GATEWAY = "EXTERNAL_GATEWAY"
+
+
+class SenderType(str, Enum):
+    SELLER = "SELLER"
+    CUSTOMER = "CUSTOMER"
+
+
+class OrderStatus(str, Enum):
+    PENDING_PAYMENT = "PENDING_PAYMENT"
+    PAYMENT_UPLOADED = "PAYMENT_UPLOADED"
+    PAYMENT_CONFIRMED = "PAYMENT_CONFIRMED"
+    PAYMENT_REJECTED = "PAYMENT_REJECTED"
+    PREPARING = "PREPARING"
+    SHIPPED = "SHIPPED"
+    DELIVERED = "DELIVERED"
+    CANCELLED = "CANCELLED"

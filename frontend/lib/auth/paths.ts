@@ -1,0 +1,32 @@
+export const paths = {
+  home: "/",
+  trackOrder: "/track-order",
+  seller: {
+    login: "/seller/login",
+    register: "/seller/register",
+    dashboard: "/seller/dashboard",
+    store: "/seller/store",
+    products: "/seller/products",
+    productNew: "/seller/products/new",
+    productEdit: (id: number | string) => `/seller/products/${id}/edit`,
+    paymentMethods: "/seller/payment-methods",
+    orders: "/seller/orders",
+    orderDetail: (id: number | string) => `/seller/orders/${id}`,
+    conversations: "/seller/conversations",
+    conversationDetail: (id: number | string) => `/seller/conversations/${id}`,
+  },
+  admin: {
+    login: "/admin/login",
+    dashboard: "/admin/dashboard",
+    stores: "/admin/stores",
+    orders: "/admin/orders",
+    orderDetail: (id: number | string) => `/admin/orders/${id}`,
+  },
+  customer: {
+    login: "/customer/login",
+    register: "/customer/register",
+    conversations: "/customer/conversations",
+    conversationDetail: (id: number | string) => `/customer/conversations/${id}`,
+  },
+  store: (slug: string) => `/store/${slug}`,
+} as const;
