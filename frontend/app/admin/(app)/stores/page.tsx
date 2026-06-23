@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useState } from "react";
+import { useCallback, useState, type FormEvent } from "react";
 import * as storesApi from "@/lib/api/admin/stores";
 import { paths } from "@/lib/auth/paths";
 import { formatDateTime } from "@/lib/format";
@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorAlert } from "@/components/ui/ErrorAlert";
+import { Input } from "@/components/ui/Input";
 import { PaginationControls } from "@/components/ui/PaginationControls";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import {
@@ -22,51 +23,93 @@ import {
   TableRow,
 } from "@/components/ui/Table";
 
+type DraftFilters = {
+  search: string;
+};
+
 export default function AdminStoresPage() {
   const toast = useToast();
   const [page, setPage] = useState(1);
   const [actionId, setActionId] = useState<number | null>(null);
+  const [filters, setFilters] = useState<DraftFilters>({ search: "" });
+  const [draft, setDraft] = useState<DraftFilters>({ search: "" });
 
   const fetchStores = useCallback(
-    () => storesApi.listStores({ page, page_size: 20 }),
-    [page],
+    () => storesApi.listStores({ page, page_size: 20, search: filters.search || undefined }),
+    [filters, page],
   );
 
-  const { data, error, isLoading, refetch } = useSellerFetch(fetchStores, [page]);
+  const { data, error, isLoading, refetch } = useSellerFetch(fetchStores, [filters, page]);
 
-  async function toggleActive(storeId: number, activate: boolean) {
+  async function runAction(storeId: number, action: "approve" | "suspend" | "activate" | "deactivate") {
     setActionId(storeId);
     try {
-      if (activate) {
+      if (action === "approve") {
+        await storesApi.approveStore(storeId);
+        toast.success("فروشگاه تایید شد");
+      } else if (action === "suspend") {
+        await storesApi.suspendStore(storeId);
+        toast.success("فروشگاه تعلیق شد");
+      } else if (action === "activate") {
         await storesApi.activateStore(storeId);
-        toast.success("Store activated");
+        toast.success("فروشگاه فعال شد");
       } else {
         await storesApi.deactivateStore(storeId);
-        toast.success("Store deactivated");
+        toast.success("فروشگاه غیرفعال شد");
       }
       await refetch();
     } catch {
-      toast.error("Failed to update store");
+      toast.error("به‌روزرسانی فروشگاه ناموفق بود");
     } finally {
       setActionId(null);
     }
+  }
+
+  function applyFilters(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setPage(1);
+    setFilters({ search: draft.search.trim() });
+  }
+
+  function resetFilters() {
+    setDraft({ search: "" });
+    setFilters({ search: "" });
+    setPage(1);
   }
 
   const items = data?.items ?? [];
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Stores</h1>
-        <p className="mt-1 text-neutral-600">Manage seller stores on the platform</p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">فروشگاه‌ها</h1>
+          <p className="mt-1 text-foreground-muted">مدیریت فروشگاه‌های فروشنده، تاییدها و نشان‌های اعتماد</p>
+        </div>
+        <Badge variant="info">{data?.total ?? 0} فروشگاه</Badge>
       </div>
 
-      {isLoading && <TableSkeleton rows={6} columns={6} />}
+      <form onSubmit={applyFilters} className="flex flex-wrap items-end gap-3 rounded-2xl border border-border bg-surface p-4">
+        <div className="min-w-[280px] flex-1">
+          <Input
+          label="جستجوی فروشگاه"
+            value={draft.search}
+            onChange={(e) => setDraft({ search: e.target.value })}
+          placeholder="نام فروشگاه، اسلاگ، ایمیل مالک"
+        />
+      </div>
+        <Button type="submit">جستجو</Button>
+        <Button type="button" variant="secondary" onClick={resetFilters}>
+          بازنشانی
+        </Button>
+      </form>
+
+      {isLoading && <TableSkeleton rows={6} columns={7} />}
 
       <ErrorAlert message={!isLoading && error ? error : ""} />
 
       {!isLoading && !error && data && data.total === 0 && (
-        <EmptyState title="No stores" description="Stores will appear when sellers register." />
+        <EmptyState title="فروشگاهی وجود ندارد" description="فروشگاه‌ها پس از ثبت‌نام فروشندگان نمایش داده می‌شوند." />
       )}
 
       {!isLoading && items.length > 0 && (
@@ -74,28 +117,27 @@ export default function AdminStoresPage() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableHeaderCell>Name</TableHeaderCell>
-                <TableHeaderCell>Owner</TableHeaderCell>
-                <TableHeaderCell>Products</TableHeaderCell>
-                <TableHeaderCell>Orders</TableHeaderCell>
-                <TableHeaderCell>Status</TableHeaderCell>
-                <TableHeaderCell>Actions</TableHeaderCell>
+                <TableHeaderCell>فروشگاه</TableHeaderCell>
+                <TableHeaderCell>مالک</TableHeaderCell>
+                <TableHeaderCell>محصولات</TableHeaderCell>
+                <TableHeaderCell>سفارش‌ها</TableHeaderCell>
+                <TableHeaderCell>وضعیت</TableHeaderCell>
+                <TableHeaderCell>ایجاد شده</TableHeaderCell>
+                <TableHeaderCell>اقدامات</TableHeaderCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {items.map((store) => (
                 <TableRow key={store.id}>
                   <TableCell>
-                    <div>
-                      <p className="font-medium">{store.name}</p>
+                    <div className="space-y-1">
                       <Link
-                        href={paths.store(store.slug)}
-                        className="text-xs text-indigo-600 hover:underline"
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        href={paths.admin.storeDetail(store.id)}
+                        className="font-medium text-brand hover:underline"
                       >
-                        /store/{store.slug}
+                        {store.name}
                       </Link>
+                      <div className="text-xs text-foreground-muted">/{store.slug}</div>
                     </div>
                   </TableCell>
                   <TableCell className="text-sm">{store.owner_email}</TableCell>
@@ -103,18 +145,33 @@ export default function AdminStoresPage() {
                   <TableCell>{store.order_count}</TableCell>
                   <TableCell>
                     <Badge variant={store.is_active ? "success" : "neutral"}>
-                      {store.is_active ? "Active" : "Inactive"}
+                      {store.is_active ? "فعال" : "معلق"}
                     </Badge>
                   </TableCell>
+                  <TableCell className="text-sm">{formatDateTime(store.created_at)}</TableCell>
                   <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      disabled={actionId === store.id}
-                      onClick={() => toggleActive(store.id, !store.is_active)}
-                    >
-                      {store.is_active ? "Deactivate" : "Activate"}
-                    </Button>
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        disabled={actionId === store.id}
+                        onClick={() => runAction(store.id, store.is_active ? "suspend" : "approve")}
+                      >
+                        {store.is_active ? "تعلیق" : "تایید"}
+                      </Button>
+                      <Link
+                        href={paths.admin.storeBadges(store.id)}
+                        className="rounded-lg border border-border px-3 py-1.5 text-sm text-foreground hover:bg-surface-muted"
+                      >
+                        نشان‌ها
+                      </Link>
+                      <Link
+                        href={paths.admin.storeDetail(store.id)}
+                        className="rounded-lg border border-brand/20 px-3 py-1.5 text-sm text-brand hover:bg-brand/5"
+                      >
+                        جزئیات
+                      </Link>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

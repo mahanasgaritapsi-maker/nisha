@@ -3,7 +3,7 @@
 import Link from "next/link";
 import * as dashboardApi from "@/lib/api/admin/dashboard";
 import { paths } from "@/lib/auth/paths";
-import { formatDateTime, formatMoney } from "@/lib/format";
+import { formatMoney } from "@/lib/format";
 import { useSellerFetch } from "@/hooks/useSellerFetch";
 import { StatCard } from "@/components/seller/StatCard";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -27,8 +27,8 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Admin dashboard</h1>
-        <p className="mt-1 text-neutral-600">Platform-wide metrics and recent activity</p>
+        <h1 className="text-2xl font-bold text-foreground">داشبورد مدیریت</h1>
+        <p className="mt-1 text-foreground-muted">آمار سراسری پلتفرم و فعالیت‌های اخیر</p>
       </div>
 
       {isLoading && (
@@ -43,35 +43,35 @@ export default function AdminDashboardPage() {
       {!isLoading && data && (
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-            <StatCard label="Total stores" value={data.total_stores} />
-            <StatCard label="Active stores" value={data.active_stores} />
-            <StatCard label="Inactive stores" value={data.inactive_stores} />
-            <StatCard label="Total sellers" value={data.total_sellers} />
-            <StatCard label="Total products" value={data.total_products} />
-            <StatCard label="Total orders" value={data.total_orders} />
+            <StatCard label="کل فروشگاه‌ها" value={data.total_stores} />
+            <StatCard label="فروشگاه‌های فعال" value={data.active_stores} />
+            <StatCard label="فروشگاه‌های غیرفعال" value={data.inactive_stores} />
+            <StatCard label="کل فروشندگان" value={data.total_sellers} />
+            <StatCard label="کل محصولات" value={data.total_products} />
+            <StatCard label="کل سفارش‌ها" value={data.total_orders} />
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <StatCard label="Confirmed revenue" value={formatMoney(data.confirmed_revenue)} />
-            <StatCard label="Pending revenue" value={formatMoney(data.pending_revenue)} />
+            <StatCard label="درآمد تاییدشده" value={formatMoney(data.confirmed_revenue)} />
+            <StatCard label="درآمد در انتظار" value={formatMoney(data.pending_revenue)} />
           </div>
 
           <Card>
             <CardHeader>
-              <CardTitle>Recent orders</CardTitle>
+              <CardTitle>سفارش‌های اخیر</CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
               {data.recent_orders.length === 0 ? (
-                <EmptyState title="No orders yet" description="Orders will appear here." />
+                <EmptyState title="هنوز سفارشی ثبت نشده" description="سفارش‌ها اینجا نمایش داده می‌شوند." />
               ) : (
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableHeaderCell>Invoice</TableHeaderCell>
-                      <TableHeaderCell>Store</TableHeaderCell>
-                      <TableHeaderCell>Buyer</TableHeaderCell>
-                      <TableHeaderCell>Status</TableHeaderCell>
-                      <TableHeaderCell>Total</TableHeaderCell>
+                      <TableHeaderCell>فاکتور</TableHeaderCell>
+                      <TableHeaderCell>فروشگاه</TableHeaderCell>
+                      <TableHeaderCell>خریدار</TableHeaderCell>
+                      <TableHeaderCell>وضعیت</TableHeaderCell>
+                      <TableHeaderCell>مجموع</TableHeaderCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -80,7 +80,7 @@ export default function AdminDashboardPage() {
                         <TableCell>
                           <Link
                             href={paths.admin.orderDetail(o.id)}
-                            className="font-medium text-indigo-600 hover:underline"
+                            className="font-medium text-brand hover:underline"
                           >
                             {o.invoice_code}
                           </Link>
@@ -88,7 +88,7 @@ export default function AdminDashboardPage() {
                         <TableCell>
                           <Link
                             href={paths.store(o.store_slug)}
-                            className="text-sm text-neutral-600 hover:underline"
+                            className="text-sm text-foreground-muted hover:underline"
                             target="_blank"
                             rel="noopener noreferrer"
                           >

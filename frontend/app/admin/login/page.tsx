@@ -7,6 +7,7 @@ import { LoginForm } from "@/components/auth/LoginForm";
 import { useAuth } from "@/contexts/AuthContext";
 import { ApiError } from "@/lib/api/errors";
 import { paths } from "@/lib/auth/paths";
+import { ThemeSwitcher } from "@/components/theme/ThemeSwitcher";
 
 export default function AdminLoginPage() {
   const { login } = useAuth();
@@ -17,7 +18,7 @@ export default function AdminLoginPage() {
     if (user.role !== "ADMIN") {
       throw new ApiError(
         403,
-        "Admin access only. Use seller login for store accounts.",
+        "فقط برای مدیران است. برای حساب فروشنده از ورود فروشنده استفاده کنید.",
       );
     }
     router.replace(paths.admin.dashboard);
@@ -25,14 +26,17 @@ export default function AdminLoginPage() {
 
   return (
     <GuestOnly role="ADMIN">
-      <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4 py-12">
+      <div className="relative flex min-h-screen items-center justify-center bg-background px-4 py-12">
+        <div className="absolute right-4 top-4 z-10">
+          <ThemeSwitcher variant="button" />
+        </div>
         <LoginForm
-          title="Admin login"
-          subtitle="Platform administration"
+          title="ورود مدیر"
+          subtitle="مدیریت و نظارت بر پلتفرم"
           onSubmit={handleLogin}
           footer={
-            <Link href={paths.home} className="text-indigo-600 hover:underline">
-              Back to homepage
+            <Link href={paths.home} className="text-brand-deep hover:underline">
+              بازگشت به صفحه اصلی
             </Link>
           }
         />
