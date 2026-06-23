@@ -4,6 +4,13 @@ import type { PaymentMethodType } from "@/types/seller/payment-method";
 export type OrderItemInput = {
   product_id: number;
   quantity: number;
+  field_values?: OrderItemFieldValueInput[];
+};
+
+export type OrderItemFieldValueInput = {
+  field_key: string;
+  value?: string | number | boolean | string[] | null;
+  file_url?: string | null;
 };
 
 export type GuestOrderCreate = {

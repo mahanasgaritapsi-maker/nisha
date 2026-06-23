@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import * as storesApi from "@/lib/api/public/stores";
-import { StoreHeader } from "@/components/layout/StoreHeader";
+import { PublicShell } from "@/components/layout/PublicShell";
 import { CartDrawer } from "@/components/store/CartDrawer";
 import { CartProvider } from "@/contexts/CartContext";
+import { Button } from "@/components/ui/Button";
 
 export function StoreLayoutWrapper({
   slug,
@@ -25,13 +26,21 @@ export function StoreLayoutWrapper({
 
   return (
     <CartProvider slug={slug}>
-      <div className="flex min-h-screen flex-col bg-neutral-50">
-        <StoreHeader storeName={storeName} slug={slug} onCartClick={() => setCartOpen(true)} />
-        <div className="mx-auto flex w-full max-w-7xl flex-1 gap-6 px-4 py-6 sm:px-6 lg:py-8">
+      <PublicShell
+        title={storeName}
+
+        showDefaultActions={false}
+        actions={
+          <Button variant="secondary" size="sm" onClick={() => setCartOpen(true)}>
+            سبد خرید
+          </Button>
+        }
+      >
+        <div className="flex flex-col gap-6 lg:flex-row">
           <div className="min-w-0 flex-1">{children}</div>
           <CartDrawer open={cartOpen} slug={slug} onClose={() => setCartOpen(false)} />
         </div>
-      </div>
+      </PublicShell>
     </CartProvider>
   );
 }

@@ -37,6 +37,19 @@ export type OrderTrackResponse = {
   payment_method: PublicPaymentMethod;
 };
 
+export type PublicOrderMessageCreateRequest = {
+  invoice_code: string;
+  invoice_edit_password: string;
+  body: string;
+  attachment_url?: string | null;
+  attachment_mime_type?: string | null;
+};
+
+export type PublicOrderChatAuthRequest = {
+  invoice_code: string;
+  invoice_edit_password: string;
+};
+
 export type GuestOrderEdit = {
   invoice_edit_password: string;
   buyer_name?: string;
@@ -59,4 +72,15 @@ export type PaymentProofUploadResponse = {
   message: string;
   order_status: OrderStatus;
   proof: PublicPaymentProof;
+};
+
+export type PublicReviewCreateRequest = {
+  invoice_code: string;
+  invoice_edit_password: string;
+  order_id: number;
+  rating: number;
+  title?: string | null;
+  comment?: string | null;
+  is_public?: boolean;
+  image_urls?: string[];
 };

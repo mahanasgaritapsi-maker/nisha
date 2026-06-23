@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import * as conversationsApi from "@/lib/api/customer/conversations";
-import { getCustomerToken } from "@/lib/auth/customer-token";
+import { useCustomerAuth } from "@/contexts/CustomerAuthContext";
 import { paths } from "@/lib/auth/paths";
 import { Button } from "@/components/ui/Button";
 
@@ -14,19 +14,15 @@ type MessageSellerButtonProps = {
 
 export function MessageSellerButton({ storeId }: MessageSellerButtonProps) {
   const router = useRouter();
+  const { customer } = useCustomerAuth();
   const [loading, setLoading] = useState(false);
-  const [hasToken, setHasToken] = useState(false);
-
-  useEffect(() => {
-    setHasToken(!!getCustomerToken());
-  }, []);
 
   const loginHref = `${paths.customer.login}?redirect=${encodeURIComponent(
     `${paths.customer.conversations}?start_store=${storeId}`,
   )}`;
 
   async function handleClick() {
-    if (!getCustomerToken()) return;
+    if (!customer) return;
     setLoading(true);
     try {
       const conv = await conversationsApi.createConversation({ store_id: storeId });
@@ -38,11 +34,11 @@ export function MessageSellerButton({ storeId }: MessageSellerButtonProps) {
     }
   }
 
-  if (!hasToken) {
+  if (!customer) {
     return (
       <Link href={loginHref}>
         <Button variant="secondary" size="sm">
-          Sign in to chat
+          ورود برای چت
         </Button>
       </Link>
     );
@@ -50,7 +46,7 @@ export function MessageSellerButton({ storeId }: MessageSellerButtonProps) {
 
   return (
     <Button variant="secondary" size="sm" disabled={loading} onClick={() => void handleClick()}>
-      Message seller
+      ارسال پیام به فروشنده
     </Button>
   );
 }
