@@ -1,3 +1,5 @@
+import type { OrderStatus } from "@/types/order";
+
 export type SenderType = "SELLER" | "CUSTOMER";
 
 export type Message = {
@@ -7,6 +9,7 @@ export type Message = {
   sender_user_id: number | null;
   body: string;
   attachment_url: string | null;
+  attachment_mime_type: string | null;
   is_read: boolean;
   created_at: string;
 };
@@ -16,7 +19,7 @@ export type ConversationListItem = {
   store_id: number;
   store_name: string;
   store_slug: string;
-  customer_id: number;
+  customer_id: number | null;
   customer_name: string;
   order_id: number | null;
   invoice_code: string | null;
@@ -31,10 +34,11 @@ export type ConversationDetail = {
   store_id: number;
   store_name: string;
   store_slug: string;
-  customer_id: number;
+  customer_id: number | null;
   customer_name: string;
   order_id: number | null;
   invoice_code: string | null;
+  order_status: OrderStatus | null;
   created_at: string;
   updated_at: string;
   messages: Message[];
@@ -43,9 +47,10 @@ export type ConversationDetail = {
 export type MessageCreate = {
   body: string;
   attachment_url?: string | null;
+  attachment_mime_type?: string | null;
 };
 
 export type ConversationCreate = {
-  store_id: number;
+  store_id?: number | null;
   order_id?: number | null;
 };

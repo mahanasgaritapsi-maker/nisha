@@ -12,9 +12,9 @@ export default function TrackOrderPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Track your order</h1>
-        <p className="mt-1 text-neutral-600">
-          Enter the invoice code and password you received when you placed your order.
+        <h1 className="text-2xl font-bold text-foreground">پیگیری سفارش</h1>
+        <p className="mt-1 text-foreground-muted">
+          کد فاکتور و رمزی را که هنگام ثبت سفارش دریافت کرده‌اید وارد کنید.
         </p>
       </div>
 
@@ -29,19 +29,15 @@ export default function TrackOrderPage() {
         <>
           <button
             type="button"
-            className="text-sm text-indigo-600 hover:underline"
+            className="text-sm text-brand-deep hover:underline"
             onClick={() => {
               setOrder(null);
               setPassword("");
             }}
           >
-            Look up a different order
+            جستجوی سفارش دیگر
           </button>
-          <OrderTrackDetails
-            order={order}
-            password={password}
-            onUpdated={setOrder}
-          />
+          <OrderTrackDetails order={order} password={password} onUpdated={setOrder} />
         </>
       )}
     </div>

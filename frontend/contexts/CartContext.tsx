@@ -119,8 +119,13 @@ export function CartProvider({ slug, children }: { slug: string; children: React
     [items],
   );
 
+  function safeParsePrice(price: string): number {
+    const num = Number(price);
+    return Number.isNaN(num) ? 0 : num;
+  }
+
   const subtotal = useMemo(
-    () => items.reduce((sum, i) => sum + parseFloat(i.price) * i.quantity, 0),
+    () => items.reduce((sum, i) => sum + safeParsePrice(i.price) * i.quantity, 0),
     [items],
   );
 
