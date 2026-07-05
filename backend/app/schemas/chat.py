@@ -52,7 +52,6 @@ class ConversationListItem(BaseModel):
     updated_at: datetime
 
 
-<<<<<<< HEAD
 class ConversationListResponse(BaseModel):
     items: list[ConversationListItem]
     total: int
@@ -60,8 +59,6 @@ class ConversationListResponse(BaseModel):
     page_size: int
 
 
-=======
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
 class ConversationDetailResponse(BaseModel):
     id: int
     store_id: int

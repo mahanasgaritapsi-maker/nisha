@@ -2,11 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
-<<<<<<< HEAD
 from sqlalchemy import ForeignKey, Index, UniqueConstraint, text
-=======
-from sqlalchemy import ForeignKey, UniqueConstraint
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -21,7 +17,6 @@ if TYPE_CHECKING:
 
 class Conversation(TimestampMixin, Base):
     __tablename__ = "conversations"
-<<<<<<< HEAD
     __table_args__ = (
         UniqueConstraint("order_id", name="uq_conversations_order_id"),
         Index(
@@ -33,9 +28,6 @@ class Conversation(TimestampMixin, Base):
             sqlite_where=text("order_id IS NULL"),
         ),
     )
-=======
-    __table_args__ = (UniqueConstraint("order_id", name="uq_conversations_order_id"),)
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
 
     id: Mapped[int] = mapped_column(primary_key=True)
     store_id: Mapped[int] = mapped_column(ForeignKey("stores.id", ondelete="CASCADE"), index=True)

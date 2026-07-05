@@ -17,26 +17,17 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     )
 
 
-<<<<<<< HEAD
 def _create_token(*, user_id: int, role: str, token_type: str, expires_delta: timedelta) -> str:
     expire = datetime.now(UTC) + expires_delta
     payload = {
         "sub": str(user_id),
         "role": role,
         "type": token_type,
-=======
-def create_access_token(*, user_id: int, role: str) -> str:
-    expire = datetime.now(UTC) + timedelta(minutes=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
-    payload = {
-        "sub": str(user_id),
-        "role": role,
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
         "exp": expire,
     }
     return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
 
-<<<<<<< HEAD
 def create_access_token(*, user_id: int, role: str) -> str:
     return _create_token(
         user_id=user_id,
@@ -56,9 +47,6 @@ def create_refresh_token(*, user_id: int, role: str) -> str:
 
 
 def _decode_token(token: str) -> dict:
-=======
-def decode_access_token(token: str) -> dict:
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
     try:
         return jwt.decode(
             token,
@@ -67,7 +55,6 @@ def decode_access_token(token: str) -> dict:
         )
     except JWTError as exc:
         raise ValueError("Invalid token") from exc
-<<<<<<< HEAD
 
 
 def decode_access_token(token: str) -> dict:
@@ -83,5 +70,3 @@ def decode_refresh_token(token: str) -> dict:
     if payload.get("type") != "refresh":
         raise ValueError("Invalid refresh token")
     return payload
-=======
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66

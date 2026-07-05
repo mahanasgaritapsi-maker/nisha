@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 from fastapi import APIRouter, Depends, Query
-=======
-from fastapi import APIRouter, Depends
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_seller_store, require_seller
@@ -12,10 +8,7 @@ from app.models.user import User
 from app.schemas.chat import (
     ConversationDetailResponse,
     ConversationListItem,
-<<<<<<< HEAD
     ConversationListResponse,
-=======
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
     MessageCreate,
     MessageResponse,
 )
@@ -24,7 +17,6 @@ from app.services import chat_service
 router = APIRouter(prefix="/conversations", tags=["seller-conversations"])
 
 
-<<<<<<< HEAD
 @router.get("", response_model=ConversationListResponse)
 def list_conversations(
     page: int = Query(default=1, ge=1),
@@ -38,14 +30,6 @@ def list_conversations(
         page=page,
         page_size=page_size,
     )
-=======
-@router.get("", response_model=list[ConversationListItem])
-def list_conversations(
-    store: Store = Depends(get_seller_store),
-    db: Session = Depends(get_db),
-) -> list[ConversationListItem]:
-    return chat_service.list_seller_conversations(db, store.id)
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
 
 
 @router.get("/{conversation_id}", response_model=ConversationDetailResponse)

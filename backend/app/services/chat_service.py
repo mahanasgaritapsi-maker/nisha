@@ -2,11 +2,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-<<<<<<< HEAD
 from sqlalchemy import func, or_, select, update
-=======
-from sqlalchemy import func, or_, select
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload, selectinload
 
@@ -20,10 +16,7 @@ from app.models.user import User
 from app.schemas.chat import (
     ConversationDetailResponse,
     ConversationListItem,
-<<<<<<< HEAD
     ConversationListResponse,
-=======
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
     MessageCreate,
     MessageResponse,
 )
@@ -135,29 +128,16 @@ def _mark_messages_read(
     reader_is_customer: bool,
 ) -> None:
     sender_to_mark = SenderType.SELLER if reader_is_customer else SenderType.CUSTOMER
-<<<<<<< HEAD
     db.execute(
         update(Message)
         .where(
-=======
-    messages = db.scalars(
-        select(Message).where(
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
             Message.conversation_id == conversation_id,
             Message.sender_type == sender_to_mark,
             Message.is_read.is_(False),
         )
-<<<<<<< HEAD
         .values(is_read=True)
         .execution_options(synchronize_session=False)
     )
-=======
-    ).all()
-    for message in messages:
-        message.is_read = True
-    if messages:
-        db.flush()
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
 
 
 def _set_order_customer_if_needed(db: Session, conversation: Conversation, customer_id: int | None) -> None:
@@ -207,18 +187,12 @@ def get_or_create_conversation(
             db.add(conversation)
             try:
                 db.commit()
-<<<<<<< HEAD
             except IntegrityError:
                 # Another request created this conversation concurrently; reuse it.
                 db.rollback()
                 conversation = _get_conversation_for_order(db, order.id)
                 if conversation is None:
                     raise ServiceError("Could not create conversation", status_code=409)
-=======
-            except IntegrityError as exc:
-                db.rollback()
-                raise ServiceError("Could not create conversation", status_code=409) from exc
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
             db.refresh(conversation)
         else:
             _set_order_customer_if_needed(db, conversation, order.customer_id or customer_id)
@@ -245,7 +219,6 @@ def get_or_create_conversation(
         db.add(conversation)
         try:
             db.commit()
-<<<<<<< HEAD
         except IntegrityError:
             # Another request created this conversation concurrently; reuse it.
             db.rollback()
@@ -258,11 +231,6 @@ def get_or_create_conversation(
             )
             if conversation is None:
                 raise ServiceError("Could not create conversation", status_code=409)
-=======
-        except IntegrityError as exc:
-            db.rollback()
-            raise ServiceError("Could not create conversation", status_code=409) from exc
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
         db.refresh(conversation)
     return _load_conversation(db, conversation.id)
 
@@ -283,7 +251,6 @@ def _list_conversations(
     query,
     *,
     unread_sender_type: SenderType,
-<<<<<<< HEAD
     page: int | None = None,
     page_size: int | None = None,
 ) -> list[ConversationListItem]:
@@ -291,10 +258,6 @@ def _list_conversations(
     if page is not None and page_size is not None:
         query = query.limit(page_size).offset((page - 1) * page_size)
     conversations = db.scalars(query).unique().all()
-=======
-) -> list[ConversationListItem]:
-    conversations = db.scalars(query.order_by(Conversation.updated_at.desc())).unique().all()
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
     items: list[ConversationListItem] = []
     for conversation in conversations:
         store = conversation.store
@@ -323,7 +286,6 @@ def _list_conversations(
 def list_customer_conversations(
     db: Session,
     customer_id: int,
-<<<<<<< HEAD
     *,
     page: int = 1,
     page_size: int = 20,
@@ -378,25 +340,6 @@ def list_seller_conversations(
         page_size=page_size,
     )
     return ConversationListResponse(items=items, total=total, page=page, page_size=page_size)
-=======
-) -> list[ConversationListItem]:
-    query = (
-        _conversation_query()
-        .outerjoin(Order, Conversation.order_id == Order.id)
-        .where(
-            or_(
-                Conversation.customer_id == customer_id,
-                Order.customer_id == customer_id,
-            )
-        )
-    )
-    return _list_conversations(db, query, unread_sender_type=SenderType.SELLER)
-
-
-def list_seller_conversations(db: Session, store_id: int) -> list[ConversationListItem]:
-    query = _conversation_query().where(Conversation.store_id == store_id)
-    return _list_conversations(db, query, unread_sender_type=SenderType.CUSTOMER)
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
 
 
 def list_admin_conversations(db: Session) -> list[ConversationListItem]:

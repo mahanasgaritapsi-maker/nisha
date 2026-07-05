@@ -56,11 +56,7 @@ class Order(TimestampMixin, Base):
     buyer_name: Mapped[str] = mapped_column(String(255), nullable=False)
     buyer_phone: Mapped[str] = mapped_column(String(50), nullable=False)
     buyer_address: Mapped[str] = mapped_column(Text, nullable=False)
-<<<<<<< HEAD
     buyer_note: Mapped[Optional[str]] = mapped_column(String(1000), nullable=True)
-=======
-    buyer_note: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
     payment_method_id: Mapped[int] = mapped_column(
         ForeignKey("payment_methods.id", ondelete="RESTRICT"),
         nullable=False,

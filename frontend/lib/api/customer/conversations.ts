@@ -13,7 +13,6 @@ export function createConversation(
   return customerApiPost<ConversationListItem>("/api/v1/customer/conversations", body);
 }
 
-<<<<<<< HEAD
 export interface ConversationListResponse {
   items: ConversationListItem[];
   total: number;
@@ -25,10 +24,6 @@ export function listConversations(page = 1, pageSize = 20): Promise<Conversation
   return customerApiGet<ConversationListResponse>(
     `/api/v1/customer/conversations?page=${page}&page_size=${pageSize}`,
   ).then((res) => res.items);
-=======
-export function listConversations(): Promise<ConversationListItem[]> {
-  return customerApiGet<ConversationListItem[]>("/api/v1/customer/conversations");
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
 }
 
 export function getConversation(id: number): Promise<ConversationDetail> {

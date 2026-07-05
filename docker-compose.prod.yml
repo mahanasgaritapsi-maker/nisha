@@ -32,12 +32,8 @@ services:
       LOG_LEVEL: INFO
       JWT_SECRET_KEY: ${JWT_SECRET_KEY:?JWT_SECRET_KEY is required}
       JWT_ALGORITHM: HS256
-<<<<<<< HEAD
       JWT_ACCESS_TOKEN_EXPIRE_MINUTES: 30
       JWT_REFRESH_TOKEN_EXPIRE_DAYS: 7
-=======
-      JWT_ACCESS_TOKEN_EXPIRE_MINUTES: 10080
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
     volumes:
       - backend_uploads:/app/uploads
     depends_on:

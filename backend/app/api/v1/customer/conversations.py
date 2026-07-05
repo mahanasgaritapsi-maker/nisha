@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 from fastapi import APIRouter, Depends, Query
-=======
-from fastapi import APIRouter, Depends
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_customer
@@ -12,10 +8,7 @@ from app.schemas.chat import (
     ConversationCreate,
     ConversationDetailResponse,
     ConversationListItem,
-<<<<<<< HEAD
     ConversationListResponse,
-=======
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
     MessageCreate,
     MessageResponse,
 )
@@ -39,7 +32,6 @@ def create_conversation(
     return chat_service.conversation_to_list_item_for_customer(db, conversation)
 
 
-<<<<<<< HEAD
 @router.get("", response_model=ConversationListResponse)
 def list_conversations(
     page: int = Query(default=1, ge=1),
@@ -53,14 +45,6 @@ def list_conversations(
         page=page,
         page_size=page_size,
     )
-=======
-@router.get("", response_model=list[ConversationListItem])
-def list_conversations(
-    customer: CustomerAccount = Depends(get_current_customer),
-    db: Session = Depends(get_db),
-) -> list[ConversationListItem]:
-    return chat_service.list_customer_conversations(db, customer.id)
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
 
 
 @router.get("/{conversation_id}", response_model=ConversationDetailResponse)

@@ -40,7 +40,6 @@ def list_orders(
     date_to: date | None = None,
     search: str | None = None,
 ) -> list[Order]:
-<<<<<<< HEAD
     query = _orders_filter_query(
         store,
         status=status,
@@ -48,26 +47,6 @@ def list_orders(
         date_to=date_to,
         search=search,
     ).order_by(Order.created_at.desc())
-=======
-    query = select(Order).where(Order.store_id == store.id)
-
-    if status is not None:
-        query = query.where(Order.status == status)
-    if date_from is not None:
-        start = datetime.combine(date_from, time.min, tzinfo=timezone.utc)
-        query = query.where(Order.created_at >= start)
-    if date_to is not None:
-        end = datetime.combine(date_to, time.max, tzinfo=timezone.utc)
-        query = query.where(Order.created_at <= end)
-    if search:
-        term = f"%{search.strip()}%"
-        query = query.where(
-            or_(Order.invoice_code.ilike(term), Order.buyer_phone.ilike(term))
-        )
-
-    query = query.options(selectinload(Order.receipt), selectinload(Order.complaints))
-    query = query.order_by(Order.created_at.desc())
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
     return list(db.scalars(query).all())
 
 

@@ -6,15 +6,12 @@ from app.models.product import Product
 
 
 def restore_order_stock(db: Session, order: Order) -> bool:
-<<<<<<< HEAD
     """Restore product stock for all items of an order.
 
     Emits the UPDATE statements and flushes them to the database, but does
     NOT commit. The caller is responsible for calling ``db.commit()`` to
     make the changes permanent.
     """
-=======
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
     db.refresh(order)
     if order.stock_restored:
         return False
@@ -34,8 +31,5 @@ def restore_order_stock(db: Session, order: Order) -> bool:
         )
 
     order.stock_restored = True
-<<<<<<< HEAD
     db.flush()
-=======
->>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
     return True
