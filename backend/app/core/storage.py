@@ -27,7 +27,7 @@ class LocalStorage:
         destination = Path(settings.UPLOAD_DIR) / key
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_bytes(content)
-        return f"/uploads/{key}"
+        return "/uploads/" + key
 
     def delete(self, key: str) -> None:
         (Path(settings.UPLOAD_DIR) / key).unlink(missing_ok=True)
@@ -81,11 +81,11 @@ class S3Storage:
 
     def _public_url(self, key: str) -> str:
         if settings.S3_PUBLIC_BASE_URL:
-            return f"{settings.S3_PUBLIC_BASE_URL.rstrip('/')}/{key}"
+            return settings.S3_PUBLIC_BASE_URL.rstrip("/") + "/" + key
         if settings.S3_ENDPOINT_URL:
-            return f"{settings.S3_ENDPOINT_URL.rstrip('/')}/{self._bucket}/{key}"
+            return settings.S3_ENDPOINT_URL.rstrip("/") + "/" + self._bucket + "/" + key
         region = settings.S3_REGION or "us-east-1"
-        return f"https://{self._bucket}.s3.{region}.amazonaws.com/{key}"
+        return "https://" + self._bucket + ".s3." + region + ".amazonaws.com/" + key
 
 
 @lru_cache
