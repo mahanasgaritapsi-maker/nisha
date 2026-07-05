@@ -1,5 +1,7 @@
 # Nisha
 
+> 🌐 Language: **English** | [فارسی](README.fa.md)
+
 Nisha is a manual-payment commerce platform for small online stores. It ships a Persian-first RTL UI, a purple/black theme system with light, dark, and system modes, a public storefront, guest checkout, seller/admin tooling, and a customer portal. The UI is Persian-only; documentation is written in English.
 
 ## What this repo contains
