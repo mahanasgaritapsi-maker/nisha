@@ -13,8 +13,12 @@ def test_list_public_products(client, public_store):
     response = client.get(f"/api/v1/public/stores/{public_store['slug']}/products")
 
     assert response.status_code == 200
-    assert len(response.json()) == 1
-    assert response.json()[0]["stock_quantity"] == 10
+    data = response.json()
+    assert data["total"] == 1
+    assert data["page"] == 1
+    assert data["has_more"] is False
+    assert len(data["items"]) == 1
+    assert data["items"][0]["stock_quantity"] == 10
 
 
 def test_inactive_store_not_found(client, public_store):

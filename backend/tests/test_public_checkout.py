@@ -35,7 +35,7 @@ def test_successful_guest_order(client, public_store, db):
 
 def test_stock_decreases_after_order(client, public_store):
     before = client.get(f"/api/v1/public/stores/{public_store['slug']}/products")
-    stock_before = before.json()[0]["stock_quantity"]
+    stock_before = before.json()["items"][0]["stock_quantity"]
 
     response = client.post(
         f"/api/v1/public/stores/{public_store['slug']}/orders",
@@ -44,7 +44,7 @@ def test_stock_decreases_after_order(client, public_store):
     assert response.status_code == 201
 
     after = client.get(f"/api/v1/public/stores/{public_store['slug']}/products")
-    stock_after = after.json()[0]["stock_quantity"]
+    stock_after = after.json()["items"][0]["stock_quantity"]
     assert stock_after == stock_before - 3
 
 
