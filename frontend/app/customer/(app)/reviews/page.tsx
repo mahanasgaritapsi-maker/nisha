@@ -79,7 +79,7 @@ export default function CustomerReviewsPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [toast]);
 
   const selectedOrder = useMemo(
     () => orders?.find((order) => order.id === selectedOrderId) ?? null,
@@ -145,7 +145,7 @@ export default function CustomerReviewsPage() {
                     key={order.id}
                     type="button"
                     onClick={() => setSelectedOrderId(order.id)}
-                      className={`rounded-3xl border p-4 text-left transition ${
+                      className={`rounded-3xl border p-4 text-start transition ${
                       active ? "border-brand bg-brand/10" : "border-border bg-surface hover:bg-surface-muted"
                       }`}
                     >

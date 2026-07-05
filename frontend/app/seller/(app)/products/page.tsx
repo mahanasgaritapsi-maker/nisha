@@ -8,7 +8,7 @@ import { formatMoney } from "@/lib/format";
 import { useToast } from "@/contexts/ToastContext";
 import { useSellerFetch } from "@/hooks/useSellerFetch";
 import { ConfirmModal } from "@/components/seller/ConfirmModal";
-import { PageHeader } from "@/components/seller/PageHeader";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -57,7 +57,6 @@ export default function SellerProductsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="محصولات"
         description="کاتالوگ خود را مدیریت کنید"
         action={
           <Link href={paths.seller.productNew}>

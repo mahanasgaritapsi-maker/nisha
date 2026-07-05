@@ -69,6 +69,7 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
       <button
         type="button"
+        tabIndex={-1}
         className="absolute inset-0 bg-black/40"
         aria-label="بستن پنجره"
         onClick={onClose}

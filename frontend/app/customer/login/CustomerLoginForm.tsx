@@ -35,7 +35,6 @@ export default function CustomerLoginForm() {
     setError(null);
     try {
       await login({ login: loginId, password });
-      router.replace(redirect);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "ورود ناموفق بود");
     } finally {

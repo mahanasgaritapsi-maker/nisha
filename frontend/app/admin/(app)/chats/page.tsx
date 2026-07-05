@@ -6,6 +6,7 @@ import * as chatsApi from "@/lib/api/admin/chats";
 import { paths } from "@/lib/auth/paths";
 import { formatDateTime } from "@/lib/format";
 import { useSellerFetch } from "@/hooks/useSellerFetch";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorAlert } from "@/components/ui/ErrorAlert";
@@ -17,10 +18,7 @@ export default function AdminChatsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">گفتگوها</h1>
-        <p className="mt-1 text-foreground-muted">نمایش فقط‌خواندنی همه گفتگوهای سفارش و قدیمی</p>
-      </div>
+      <PageHeader description="نمایش فقط‌خواندنی همه گفتگوهای سفارش و قدیمی" />
 
       {isLoading && <TableSkeleton rows={5} columns={1} />}
       <ErrorAlert message={!isLoading && error ? error : ""} />

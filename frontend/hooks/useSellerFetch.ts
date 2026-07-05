@@ -8,13 +8,15 @@ export function useSellerFetch<T>(fetchFn: () => Promise<T>, deps: unknown[] = [
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const cancelledRef = useRef(false);
+  const fetchFnRef = useRef(fetchFn);
+  fetchFnRef.current = fetchFn;
 
   const refetch = useCallback(async () => {
     if (cancelledRef.current) return null;
     setIsLoading(true);
     setError(null);
     try {
-      const result = await fetchFn();
+      const result = await fetchFnRef.current();
       if (!cancelledRef.current) {
         setData(result);
       }

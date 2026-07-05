@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import { ApiError } from "@/lib/api/errors";
 import * as reviewsApi from "@/lib/api/admin/reviews";
 import { useToast } from "@/contexts/ToastContext";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -53,20 +54,19 @@ export default function AdminReviewsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-        <h1 className="text-2xl font-bold text-foreground">نظرات</h1>
-        <p className="mt-1 text-foreground-muted">نظرات خریداران را پیش از عمومی شدن بررسی کنید.</p>
-        </div>
-        <label className="flex items-center gap-2 text-sm text-foreground">
-          <input
-            type="checkbox"
-            checked={pendingOnly}
-            onChange={(e) => setPendingOnly(e.target.checked)}
-          />
-          فقط در انتظار
-        </label>
-      </div>
+      <PageHeader
+        description="نظرات خریداران را پیش از عمومی شدن بررسی کنید."
+        action={
+          <label className="flex items-center gap-2 text-sm text-foreground">
+            <input
+              type="checkbox"
+              checked={pendingOnly}
+              onChange={(e) => setPendingOnly(e.target.checked)}
+            />
+            فقط در انتظار
+          </label>
+        }
+      />
 
       <Input
         label="یادداشت بررسی"

@@ -5,7 +5,7 @@ import * as storeApi from "@/lib/api/seller/store";
 import { paths } from "@/lib/auth/paths";
 import { useToast } from "@/contexts/ToastContext";
 import { useSellerFetch } from "@/hooks/useSellerFetch";
-import { PageHeader } from "@/components/seller/PageHeader";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { StoreSettingsForm } from "@/components/seller/StoreSettingsForm";
 import { Button } from "@/components/ui/Button";
 import { ErrorAlert } from "@/components/ui/ErrorAlert";
@@ -26,7 +26,7 @@ export default function SellerStorePage() {
   if (error || !data) {
     return (
       <div className="space-y-6">
-        <PageHeader title="تنظیمات فروشگاه" description="پروفایل عمومی فروشگاه خود را مدیریت کنید" />
+        <PageHeader description="پروفایل عمومی فروشگاه خود را مدیریت کنید" />
         <ErrorAlert message={error ?? "بارگذاری فروشگاه ممکن نشد"} />
       </div>
     );
@@ -35,7 +35,6 @@ export default function SellerStorePage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="تنظیمات فروشگاه"
         description="پروفایل عمومی فروشگاه خود را مدیریت کنید"
         action={
           <Link href={paths.store(data.slug)} target="_blank" rel="noopener noreferrer">

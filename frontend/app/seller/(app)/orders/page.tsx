@@ -6,7 +6,7 @@ import * as ordersApi from "@/lib/api/seller/orders";
 import { paths } from "@/lib/auth/paths";
 import { formatDateTime, formatMoney } from "@/lib/format";
 import { useSellerFetch } from "@/hooks/useSellerFetch";
-import { PageHeader } from "@/components/seller/PageHeader";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { Input } from "@/components/ui/Input";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorAlert } from "@/components/ui/ErrorAlert";
@@ -81,7 +81,7 @@ export default function SellerOrdersPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="سفارش‌ها" description="بین بررسی پرداخت و پردازش سفارش تقسیم شده است" />
+      <PageHeader description="بین بررسی پرداخت و پردازش سفارش تقسیم شده است" />
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
         <div className="flex-1">

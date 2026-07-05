@@ -5,10 +5,13 @@ import { ChatThread } from "@/components/chat/ChatThread";
 import { InvoiceView } from "@/components/invoice/InvoiceView";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
+import { ErrorAlert } from "@/components/ui/ErrorAlert";
 import { Input } from "@/components/ui/Input";
+import { LoadingState } from "@/components/ui/LoadingState";
 import { Textarea } from "@/components/ui/Textarea";
 import { Badge } from "@/components/ui/Badge";
 import { StarRating } from "@/components/ui/StarRating";
+import { useToast } from "@/contexts/ToastContext";
 import { ApiError } from "@/lib/api/errors";
 import { uploadPublicImage } from "@/lib/api/public/uploads";
 import * as ordersApi from "@/lib/api/public/orders";
@@ -29,6 +32,7 @@ async function uploadSelectedImages(files: FileList | null): Promise<string[]> {
 
 export default function InvoicePage({ params }: PageProps) {
   const { invoiceCode } = use(params);
+  const toast = useToast();
   const [password, setPassword] = useState("");
   const [order, setOrder] = useState<OrderTrackResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -116,11 +120,7 @@ export default function InvoicePage({ params }: PageProps) {
               فاکتور <span className="font-mono">{invoiceCode}</span>
             </p>
             <form onSubmit={handleUnlock} className="mt-6 space-y-4">
-              {error && (
-                <p className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-200" role="alert">
-                  {error}
-                </p>
-              )}
+              {error && <ErrorAlert message={error} />}
               <Input
                 label="رمز فاکتور"
                 type="password"
@@ -162,14 +162,20 @@ export default function InvoicePage({ params }: PageProps) {
                   error={null}
                   ownSenderType="CUSTOMER"
                   onSend={async (payload) => {
-                    const sent = await ordersApi.sendOrderChatMessage(invoiceCode, {
-                      invoice_code: invoiceCode,
-                      invoice_edit_password: password,
-                      ...payload,
-                    });
-                    setConversation((prev) =>
-                      prev ? { ...prev, messages: [...prev.messages, sent] } : prev,
-                    );
+                    try {
+                      const sent = await ordersApi.sendOrderChatMessage(invoiceCode, {
+                        invoice_code: invoiceCode,
+                        invoice_edit_password: password,
+                        ...payload,
+                      });
+                      setConversation((prev) =>
+                        prev ? { ...prev, messages: [...prev.messages, sent] } : prev,
+                      );
+                    } catch (err) {
+                      toast.error(
+                        err instanceof ApiError ? err.message : "ارسال پیام ناموفق بود",
+                      );
+                    }
                   }}
                   header={
                     <div>
@@ -179,7 +185,7 @@ export default function InvoicePage({ params }: PageProps) {
                   }
                 />
               ) : openingChat ? (
-                <p className="text-sm text-foreground-muted" aria-live="polite">در حال باز کردن گفتگو...</p>
+                <LoadingState message="در حال باز کردن گفتگو..." className="py-10" />
               ) : (
                 <p className="text-sm text-foreground-muted">
                   با استفاده از اطلاعات فاکتور بالا می‌توانید گفتگوی این سفارش را باز کنید.

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import * as productsApi from "@/lib/api/seller/products";
 import { paths } from "@/lib/auth/paths";
 import { useToast } from "@/contexts/ToastContext";
-import { PageHeader } from "@/components/seller/PageHeader";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { ProductForm } from "@/components/seller/ProductForm";
 import type { ProductCreate } from "@/types/seller/product";
 
@@ -20,7 +20,7 @@ export default function NewProductPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="محصول جدید" description="یک محصول به فروشگاه خود اضافه کنید" />
+      <PageHeader title="محصول جدید" description="یک محصول به فروشگاه خود اضافه کنید" size="page" />
       <ProductForm onSubmit={handleSubmit} submitLabel="ایجاد محصول" />
     </div>
   );

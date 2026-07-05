@@ -1,9 +1,5 @@
 function getLocale(): string {
-  if (typeof document === "undefined") {
-    return "fa-IR";
-  }
-
-  return document.documentElement.lang === "en" ? "en-US" : "fa-IR";
+  return "fa-IR";
 }
 
 export function formatMoney(value: string | number): string {

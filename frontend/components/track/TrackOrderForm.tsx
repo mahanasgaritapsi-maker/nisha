@@ -4,8 +4,9 @@ import { useState, type FormEvent } from "react";
 import * as ordersApi from "@/lib/api/public/orders";
 import { ApiError } from "@/lib/api/errors";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 import { Card, CardContent } from "@/components/ui/Card";
+import { ErrorAlert } from "@/components/ui/ErrorAlert";
+import { Input } from "@/components/ui/Input";
 import type { OrderTrackResponse } from "@/types/public/order";
 
 type TrackOrderFormProps = {
@@ -39,11 +40,7 @@ export function TrackOrderForm({ onSuccess }: TrackOrderFormProps) {
     <Card>
       <CardContent className="py-6">
         <form onSubmit={handleSubmit} className="mx-auto max-w-md space-y-4">
-          {error && (
-            <p className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-200" role="alert">
-              {error}
-            </p>
-          )}
+          {error && <ErrorAlert message={error} />}
           <Input
             label="کد فاکتور"
             value={invoiceCode}

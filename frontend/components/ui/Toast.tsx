@@ -20,32 +20,45 @@ export function ToastContainer({ toasts, onDismiss }: ToastContainerProps) {
     <div
       className="pointer-events-none fixed bottom-4 end-4 z-[100] flex max-w-sm flex-col gap-2"
       aria-live="polite"
+      aria-atomic="true"
     >
       {toasts.map((toast) => (
-        <div
-          key={toast.id}
-          className={cn(
-            "pointer-events-auto rounded-lg border px-4 py-3 text-sm shadow-lg",
-            toast.variant === "success"
-              ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-900 dark:text-emerald-100"
-              : toast.variant === "warning"
-                ? "border-amber-500/20 bg-amber-500/10 text-amber-900 dark:text-amber-100"
-                : "border-red-500/20 bg-red-500/10 text-red-900 dark:text-red-100",
-          )}
-        >
-          <div className="flex items-start justify-between gap-3">
-            <p>{toast.message}</p>
-            <button
-              type="button"
-              className="shrink-0 text-foreground-muted hover:text-foreground"
-              onClick={() => onDismiss(toast.id)}
-              aria-label="بستن"
-            >
-              ×
-            </button>
-          </div>
-        </div>
+        <ToastCard key={toast.id} toast={toast} onDismiss={onDismiss} />
       ))}
+    </div>
+  );
+}
+
+function ToastCard({
+  toast,
+  onDismiss,
+}: {
+  toast: ToastItem;
+  onDismiss: (id: number) => void;
+}) {
+  return (
+    <div
+      className={cn(
+        "pointer-events-auto rounded-lg border px-4 py-3 text-sm shadow-lg",
+        toast.variant === "success"
+          ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-900 dark:text-emerald-100"
+          : toast.variant === "warning"
+            ? "border-amber-500/20 bg-amber-500/10 text-amber-900 dark:text-amber-100"
+            : "border-red-500/20 bg-red-500/10 text-red-900 dark:text-red-100",
+      )}
+      role={toast.variant === "error" ? "alert" : undefined}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <p>{toast.message}</p>
+        <button
+          type="button"
+          className="shrink-0 text-foreground-muted hover:text-foreground"
+          onClick={() => onDismiss(toast.id)}
+          aria-label="بستن"
+        >
+          ×
+        </button>
+      </div>
     </div>
   );
 }

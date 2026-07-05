@@ -1,7 +1,7 @@
-export type Language = "fa" | "en";
+export type Language = "fa";
 
 export function isLanguage(value: string | null | undefined): value is Language {
-  return value === "fa" || value === "en";
+  return value === "fa";
 }
 
 export function getLanguageInitializerScript(): string {

@@ -8,7 +8,7 @@ import { useToast } from "@/contexts/ToastContext";
 import { useSellerFetch } from "@/hooks/useSellerFetch";
 import { ConfirmModal } from "@/components/seller/ConfirmModal";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { PageHeader } from "@/components/seller/PageHeader";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { ProductForm } from "@/components/seller/ProductForm";
 import { Button } from "@/components/ui/Button";
 import { LoadingState } from "@/components/ui/LoadingState";
@@ -61,7 +61,7 @@ export default function EditProductPage({ params }: PageProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
-        <PageHeader title="ویرایش محصول" description={data.title} />
+        <PageHeader title="ویرایش محصول" description={data.title} size="page" />
         <Button variant="danger" onClick={() => setShowDeleteModal(true)}>
           حذف محصول
         </Button>

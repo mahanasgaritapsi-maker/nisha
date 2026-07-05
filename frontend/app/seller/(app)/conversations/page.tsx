@@ -3,7 +3,7 @@
 import * as conversationsApi from "@/lib/api/seller/conversations";
 import { paths } from "@/lib/auth/paths";
 import { useSellerFetch } from "@/hooks/useSellerFetch";
-import { PageHeader } from "@/components/seller/PageHeader";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { ConversationListItemRow } from "@/components/chat/ConversationListItem";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorAlert } from "@/components/ui/ErrorAlert";
@@ -17,7 +17,7 @@ export default function SellerConversationsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="پیام‌ها" description="با مشتریان خود گفتگو کنید" />
+      <PageHeader description="با مشتریان خود گفتگو کنید" />
 
       {isLoading && <TableSkeleton rows={5} columns={1} />}
 
@@ -31,7 +31,7 @@ export default function SellerConversationsPage() {
       )}
 
       {data && data.length > 0 && (
-        <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white">
+        <div className="overflow-hidden rounded-xl border border-border bg-surface">
           {data.map((item) => (
             <ConversationListItemRow
               key={item.id}

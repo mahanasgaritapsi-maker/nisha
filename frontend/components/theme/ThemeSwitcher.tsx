@@ -40,6 +40,7 @@ export function ThemeSwitcher({ variant = "button", className }: ThemeSwitcherPr
     <div className={cn("grid grid-cols-3 gap-2", className)}>
       {themeModes.map((mode) => {
         const active = theme === mode.value;
+
         return (
           <button
             key={mode.value}

@@ -6,20 +6,20 @@ import { landingButtonClasses } from "@/components/landing/buttonStyles";
 import { paths } from "@/lib/auth/paths";
 
 export const metadata: Metadata = {
-  title: "فروشگاه‌ساز مدرن برای فروشندگان",
+  title: "فروشگاه‌ساز نیشا",
   description:
-    "فروشگاه اختصاصی بسازید، اولین محصول را سریع منتشر کنید، سفارش‌ها را مدیریت کنید و با مشتری‌ها در یک تجربه ساده و مدرن در ارتباط بمانید.",
+    "در چند دقیقه فروشگاه خود را بسازید، اطلاعات اصلی را کامل کنید، اولین محصول را منتشر کنید و راه‌اندازی را بدون سردرگمی جلو ببرید.",
   openGraph: {
-    title: "نیشا | فروشگاه‌ساز مدرن برای فروشندگان",
+    title: "نیشا | فروشگاه‌ساز برای فروشندگان",
     description:
-      "فروشگاه اختصاصی بسازید، اولین محصول را سریع منتشر کنید، سفارش‌ها را مدیریت کنید و با مشتری‌ها در یک تجربه ساده و مدرن در ارتباط بمانید.",
+      "در چند دقیقه فروشگاه خود را بسازید، اطلاعات اصلی را کامل کنید، اولین محصول را منتشر کنید و راه‌اندازی را بدون سردرگمی جلو ببرید.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "نیشا | فروشگاه‌ساز مدرن برای فروشندگان",
+    title: "نیشا | فروشگاه‌ساز برای فروشندگان",
     description:
-      "فروشگاه اختصاصی بسازید، اولین محصول را سریع منتشر کنید، سفارش‌ها را مدیریت کنید و با مشتری‌ها در یک تجربه ساده و مدرن در ارتباط بمانید.",
+      "در چند دقیقه فروشگاه خود را بسازید، اطلاعات اصلی را کامل کنید، اولین محصول را منتشر کنید و راه‌اندازی را بدون سردرگمی جلو ببرید.",
   },
 };
 
@@ -67,81 +67,82 @@ function InsightIcon() {
 const capabilities = [
   {
     title: "فروشگاه اختصاصی",
-    description: "نام، لوگو و هویت فروشگاه را تمیز و حرفه‌ای تنظیم کنید.",
+    description: "نام، لوگو و تصویر اصلی را تنظیم کنید تا صفحه فروشگاه‌تان حرفه‌ای و قابل‌اعتماد دیده شود.",
     icon: StoreIcon,
   },
   {
     title: "مدیریت سفارش‌ها",
-    description: "سفارش‌ها را در یک مسیر واضح ببینید و سریع‌تر پیگیری کنید.",
+    description: "سفارش‌ها را یکجا ببینید، وضعیت آن‌ها را پیگیری کنید و کارها را بدون رفت‌وآمد بین چند صفحه جلو ببرید.",
     icon: OrdersIcon,
   },
   {
-    title: "گفتگو با مشتری",
-    description: "با خریداران از طریق کانال‌های ارتباطی دلخواه در تماس بمانید.",
+    title: "ارتباط با مشتری",
+    description: "راه‌های ارتباطی دلخواه خودتان را اضافه کنید تا مشتری سریع‌تر به شما برسد.",
     icon: ChatIcon,
   },
   {
     title: "اعتماد و آمار",
-    description: "نظرات تاییدشده، نشان‌های اعتماد و داده‌های کلیدی فروش را یک‌جا دنبال کنید.",
+    description: "امتیازها، نشان اعتماد و داده‌های اصلی فروش را کنار هم ببینید و تصمیم‌های دقیق‌تری بگیرید.",
     icon: InsightIcon,
   },
 ];
 
 const activationSteps = [
   {
-    title: "فروشگاه را برند کنید",
-    description: "نام، لوگو و تصویر کاور را اضافه کنید تا فروشگاه حرفه‌ای‌تر دیده شود.",
+    title: "فروشگاه را نام‌گذاری کنید",
+    description: "نام، لوگو و تصویر فروشگاه را اضافه کنید تا هویت صفحه‌تان روشن شود.",
   },
   {
-    title: "اطلاعات را کامل کنید",
-    description: "دسته‌بندی، توضیح و راه‌های ارتباطی را تکمیل کنید تا اعتماد بیشتری بسازید.",
+    title: "اطلاعات و راه‌های تماس را کامل کنید",
+    description: "توضیح کوتاه، دسته و لینک‌های ارتباطی را ثبت کنید تا اعتماد بیشتری بسازید.",
   },
   {
     title: "اولین محصول را منتشر کنید",
-    description: "یک محصول ساده اضافه کنید و همان لحظه آماده فروش شوید.",
+    description: "یک محصول ساده اضافه کنید تا فروشگاهتان از حالت خالی خارج شود و آماده فروش بماند.",
   },
 ];
+
+const nextActions = ["افزودن محصول بیشتر", "تکمیل پروفایل", "اشتراک‌گذاری فروشگاه", "شروع دریافت مشتری"];
 
 export default function HomePage() {
   return (
     <div className="space-y-24 lg:space-y-28">
-      <section className="grid gap-14 pt-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center lg:pt-10">
+      <section className="grid gap-12 pt-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center lg:pt-10">
         <div className="space-y-8">
           <div
             className="animate-reveal-up inline-flex items-center gap-2 rounded-full border border-border bg-surface/80 px-4 py-2 text-sm font-medium text-foreground-muted shadow-sm"
             style={{ animationDelay: "40ms" }}
           >
             <span className="h-2 w-2 rounded-full bg-brand shadow-[0_0_0_6px_rgba(124,58,237,0.12)]" />
-            ویژه فروشندگان
+            برای فروشنده‌های تازه
           </div>
 
           <div className="space-y-4 animate-reveal-up" style={{ animationDelay: "100ms" }}>
             <h1 className="max-w-3xl text-4xl font-semibold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-7xl">
-              فروشگاه خود را بسازید
+              فروشگاه‌تان را بسازید
               <span className="block bg-gradient-to-r from-brand via-violet-500 to-fuchsia-500 bg-clip-text text-transparent">
-                و سریع‌تر به فروش برسید
+                و اولین محصول را سریع منتشر کنید
               </span>
             </h1>
             <p className="max-w-2xl text-base leading-8 text-foreground-muted sm:text-lg">
-              نیشا مسیر ساخت فروشگاه، افزودن محصول، پاسخ به مشتری و مدیریت سفارش‌ها را ساده، مدرن و مناسب موبایل
-              می‌کند.
+              نیشا مسیر شروع را کوتاه می‌کند: فروشگاه را راه‌اندازی می‌کنید، اطلاعات را کامل می‌کنید، راه‌های ارتباطی را اضافه می‌کنید و هر زمان خواستید ادامه می‌دهید.
             </p>
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row animate-reveal-up" style={{ animationDelay: "180ms" }}>
-            <SellerPrimaryCta size="lg" className="px-6" guestLabel="شروع فروش" sellerLabel="رفتن به داشبورد" />
-            <Link
-              href={paths.seller.login}
-              className={landingButtonClasses({ variant: "ghost", size: "lg", className: "px-6" })}
-            >
+            <SellerPrimaryCta size="lg" className="px-6" guestLabel="شروع راه‌اندازی" sellerLabel="رفتن به داشبورد" />
+            <Link href={paths.seller.login} className={landingButtonClasses({ variant: "ghost", size: "lg", className: "px-6" })}>
               ورود فروشنده
             </Link>
           </div>
 
-          <div className="flex flex-wrap gap-3 text-sm text-foreground-muted animate-reveal-up" style={{ animationDelay: "260ms" }}>
-            <span className="rounded-full border border-border bg-surface/70 px-3 py-2">مناسب موبایل</span>
-            <span className="rounded-full border border-border bg-surface/70 px-3 py-2">سبک و سریع</span>
+          <div
+            className="flex flex-wrap gap-3 text-sm text-foreground-muted animate-reveal-up"
+            style={{ animationDelay: "260ms" }}
+          >
+            <span className="rounded-full border border-border bg-surface/70 px-3 py-2">ذخیره خودکار</span>
             <span className="rounded-full border border-border bg-surface/70 px-3 py-2">قابل ادامه بعداً</span>
+            <span className="rounded-full border border-border bg-surface/70 px-3 py-2">مناسب موبایل</span>
           </div>
         </div>
 
@@ -152,12 +153,12 @@ export default function HomePage() {
 
       <section className="space-y-8">
         <div className="max-w-2xl space-y-3">
-          <p className="text-sm font-medium tracking-[0.26em] text-brand">قابلیت‌ها</p>
+          <p className="text-sm font-medium tracking-[0.26em] text-brand">چیزی که از همان روز اول دارید</p>
           <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl lg:text-5xl">
             همه چیز برای شروع فروش
           </h2>
           <p className="max-w-xl text-sm leading-7 text-foreground-muted sm:text-base">
-            یک مسیر یکپارچه برای ساخت فروشگاه، ارتباط با خریدار و رشد اعتماد.
+            هر بخش طوری طراحی شده که هم به مشتری اعتماد بدهد، هم کار شما را ساده‌تر کند.
           </p>
         </div>
 
@@ -184,12 +185,12 @@ export default function HomePage() {
 
       <section className="grid gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-start">
         <div className="rounded-[2rem] border border-border/70 bg-surface/85 p-6 shadow-sm sm:p-8">
-          <p className="text-sm font-medium tracking-[0.26em] text-brand">مسیر فعال‌سازی</p>
+          <p className="text-sm font-medium tracking-[0.26em] text-brand">راهنمای شروع</p>
           <h2 className="mt-4 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-            راه‌اندازی را مرحله‌به‌مرحله پیش ببرید
+            راه‌اندازی را مرحله‌به‌مرحله جلو ببرید
           </h2>
           <p className="mt-4 max-w-xl text-sm leading-7 text-foreground-muted sm:text-base">
-            بعد از ثبت‌نام، مسیر شما روشن است: فروشگاه، اطلاعات و اولین محصول. هر مرحله سبک و قابل ادامه دادن است.
+            هر مرحله کوتاه است، ذخیره خودکار دارد و هر زمان خواستید می‌توانید بعداً برگردید.
           </p>
 
           <div className="mt-8 space-y-4">
@@ -211,25 +212,24 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-[2rem] border border-brand/15 bg-[linear-gradient(180deg,rgba(124,58,237,0.08),rgba(255,255,255,0.75))] p-6 shadow-sm dark:bg-[linear-gradient(180deg,rgba(124,58,237,0.14),rgba(15,23,42,0.9))] sm:p-8">
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand/40 to-transparent" />
+        <div className="rounded-[2rem] border border-brand/15 bg-[linear-gradient(180deg,rgba(124,58,237,0.08),rgba(255,255,255,0.75))] p-6 shadow-sm dark:bg-[linear-gradient(180deg,rgba(124,58,237,0.12),rgba(15,23,42,0.9))] sm:p-8">
           <div className="relative flex items-start justify-between gap-4">
             <div>
               <p className="text-xs font-medium tracking-[0.24em] text-foreground-muted">پیشرفت راه‌اندازی</p>
-              <h3 className="mt-2 text-xl font-semibold text-foreground">۳ قدم تا فعال شدن</h3>
+              <h3 className="mt-2 text-xl font-semibold text-foreground">۲ از ۳ مرحله کامل شده</h3>
             </div>
             <div className="rounded-full border border-brand/20 bg-brand/10 px-3 py-1 text-sm font-medium text-brand">
               قابل ادامه بعداً
             </div>
           </div>
 
-          <div className="relative mt-6 space-y-4">
+          <div className="mt-6 space-y-4">
             <div className="h-2 overflow-hidden rounded-full bg-surface-muted">
-              <div className="h-full w-[70%] rounded-full bg-gradient-to-r from-brand to-fuchsia-500" />
+              <div className="h-full w-[66%] rounded-full bg-gradient-to-r from-brand to-fuchsia-500" />
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3">
-              {["نام و لوگو", "اولین محصول", "اعتماد و ارتباط"].map((label, index) => (
+              {["فروشگاه", "اطلاعات تماس", "اولین محصول"].map((label, index) => (
                 <div key={label} className="rounded-2xl border border-border/70 bg-surface px-4 py-3 shadow-sm">
                   <p className="text-xs font-medium tracking-[0.18em] text-foreground-muted">گام {index + 1}</p>
                   <p className="mt-1 text-sm font-semibold text-foreground">{label}</p>
@@ -238,11 +238,14 @@ export default function HomePage() {
             </div>
 
             <div className="rounded-[1.5rem] border border-border/70 bg-surface p-5 shadow-sm">
-              <p className="text-sm font-semibold text-foreground">هر چیز مهم، در یک جای ساده</p>
+              <p className="text-sm font-semibold text-foreground">قدم بعدی چیست؟</p>
               <ul className="mt-4 space-y-3 text-sm leading-6 text-foreground-muted">
-                <li>تنظیمات فروشگاه</li>
-                <li>کانال‌های ارتباطی</li>
-                <li>اولین محصول</li>
+                {nextActions.map((item) => (
+                  <li key={item} className="flex items-center justify-between gap-3">
+                    <span>{item}</span>
+                    <span className="h-2 w-2 rounded-full bg-brand" />
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
@@ -253,23 +256,24 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.09),transparent_36%)]" />
         <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_auto] lg:items-center">
           <div className="space-y-4">
-            <p className="text-sm font-medium tracking-[0.26em] text-brand">شروع نهایی</p>
+            <p className="text-sm font-medium tracking-[0.26em] text-brand">آماده شروع</p>
             <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-4xl">
-              فروشگاه شما آماده شروع است
+              فروشگاه شما آماده است
             </h2>
             <p className="max-w-2xl text-sm leading-7 text-foreground-muted sm:text-base">
-              با یک تجربه کوتاه و روشن، فروشگاه را فعال کنید، اولین محصول را اضافه کنید و بعداً جزئیات را تکمیل
-              کنید.
+              از اینجا می‌توانید چند محصول دیگر اضافه کنید، پروفایل را کامل‌تر کنید و فروشگاه را با خیال راحت منتشر کنید.
             </p>
             <div className="flex flex-wrap gap-3 text-sm text-foreground-muted">
-              <span className="rounded-full border border-border bg-background px-3 py-2">مناسب موبایل</span>
-              <span className="rounded-full border border-border bg-background px-3 py-2">سبک و سریع</span>
-              <span className="rounded-full border border-border bg-background px-3 py-2">بدون پیچیدگی</span>
+              {["افزودن محصول بیشتر", "تکمیل پروفایل", "اشتراک‌گذاری فروشگاه"].map((item) => (
+                <span key={item} className="rounded-full border border-border bg-background px-3 py-2">
+                  {item}
+                </span>
+              ))}
             </div>
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
-            <SellerPrimaryCta size="lg" className="px-6" guestLabel="شروع فروش" sellerLabel="رفتن به داشبورد" />
+            <SellerPrimaryCta size="lg" className="px-6" guestLabel="شروع راه‌اندازی" sellerLabel="رفتن به داشبورد" />
             <Link
               href={paths.seller.login}
               className={landingButtonClasses({ variant: "secondary", size: "lg", className: "px-6" })}
