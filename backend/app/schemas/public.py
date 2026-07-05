@@ -49,6 +49,8 @@ class PublicProduct(BaseModel):
     description: str | None
     price: Decimal
     stock_quantity: int
+    video_url: str | None = None
+    video_mime_type: str | None = None
     images: list[ProductImageResponse]
     form_fields: list[ProductFormFieldResponse]
     image_count: int = 0

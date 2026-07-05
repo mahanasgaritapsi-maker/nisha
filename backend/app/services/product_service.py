@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session, selectinload
 from app.models.product import OrderItemFieldValue, Product, ProductFieldType, ProductFormField, ProductImage
 from app.models.store import Store
 from app.schemas.product import (
+    MAX_PRODUCT_IMAGES,
     ProductCreate,
     ProductFormFieldInput,
     ProductFormFieldReorderRequest,
@@ -17,6 +18,8 @@ from app.schemas.product import (
     ProductUpdate,
 )
 from app.services.exceptions import ServiceError
+
+MAX_IMAGES_MESSAGE = "حداکثر ۸ تصویر برای هر محصول مجاز است"
 
 
 def _serialize_json(value) -> str | None:
@@ -60,6 +63,8 @@ def _attach_images(
         return
 
     coerced_images = [_coerce_image_input(image) for image in images]
+    if len(coerced_images) > MAX_PRODUCT_IMAGES:
+        raise ServiceError(MAX_IMAGES_MESSAGE, status_code=422)
 
     if isinstance(coerced_images[0], str):  # legacy compatibility
         for index, image_url in enumerate(coerced_images):
@@ -178,6 +183,8 @@ def create_product(db: Session, store: Store, data: ProductCreate) -> Product:
         price=data.price,
         stock_quantity=data.stock_quantity,
         is_active=data.is_active,
+        video_url=data.video_url,
+        video_mime_type=data.video_mime_type,
     )
     db.add(product)
     db.flush()
@@ -276,6 +283,8 @@ def _get_form_field(db: Session, store: Store, product_id: int, field_id: int) -
 
 def create_product_image(db: Session, store: Store, product_id: int, data: ProductImageInput) -> ProductImage:
     product = get_product(db, store, product_id)
+    if len(product.images) >= MAX_PRODUCT_IMAGES:
+        raise ServiceError(MAX_IMAGES_MESSAGE, status_code=422)
     image = ProductImage(
         product_id=product.id,
         image_url=data.image_url,

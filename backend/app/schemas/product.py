@@ -5,6 +5,8 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.models.enums import ProductFieldType
 
+MAX_PRODUCT_IMAGES = 8
+
 
 class ProductImageResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -78,8 +80,10 @@ class ProductCreate(BaseModel):
     price: Decimal = Field(gt=0)
     stock_quantity: int = Field(ge=0, default=0)
     is_active: bool = True
-    image_urls: list[str] | None = None
-    images: list[ProductImageInput] | None = None
+    video_url: str | None = Field(default=None, max_length=500)
+    video_mime_type: str | None = Field(default=None, max_length=100)
+    image_urls: list[str] | None = Field(default=None, max_length=MAX_PRODUCT_IMAGES)
+    images: list[ProductImageInput] | None = Field(default=None, max_length=MAX_PRODUCT_IMAGES)
     form_fields: list[ProductFormFieldInput] | None = None
 
 
@@ -89,8 +93,10 @@ class ProductUpdate(BaseModel):
     price: Decimal | None = Field(default=None, gt=0)
     stock_quantity: int | None = Field(default=None, ge=0)
     is_active: bool | None = None
-    image_urls: list[str] | None = None
-    images: list[ProductImageInput] | None = None
+    video_url: str | None = Field(default=None, max_length=500)
+    video_mime_type: str | None = Field(default=None, max_length=100)
+    image_urls: list[str] | None = Field(default=None, max_length=MAX_PRODUCT_IMAGES)
+    images: list[ProductImageInput] | None = Field(default=None, max_length=MAX_PRODUCT_IMAGES)
     form_fields: list[ProductFormFieldInput] | None = None
 
 
@@ -104,6 +110,8 @@ class ProductResponse(BaseModel):
     price: Decimal
     stock_quantity: int
     is_active: bool
+    video_url: str | None
+    video_mime_type: str | None
     images: list[ProductImageResponse]
     form_fields: list[ProductFormFieldResponse]
     created_at: datetime

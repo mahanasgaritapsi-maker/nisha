@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     UPLOAD_DIR: str = "./uploads"
     PAYMENT_PROOF_SUBDIR: str = "payment-proofs"
     MAX_UPLOAD_SIZE_BYTES: int = 5_242_880
+    MAX_VIDEO_UPLOAD_SIZE_BYTES: int = 52_428_800
     LOW_STOCK_THRESHOLD: int = 5
     API_HOST: str = "0.0.0.0"
     API_PORT: int = 8000

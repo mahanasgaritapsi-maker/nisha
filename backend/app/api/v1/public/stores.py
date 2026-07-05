@@ -32,6 +32,8 @@ def _public_product(product) -> PublicProduct:
         description=product.description,
         price=product.price,
         stock_quantity=product.stock_quantity,
+        video_url=product.video_url,
+        video_mime_type=product.video_mime_type,
         images=[ProductImageResponse.model_validate(img) for img in product.images],
         form_fields=[ProductFormFieldResponse.model_validate(field) for field in product.form_fields],
         image_count=len(product.images),

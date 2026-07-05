@@ -30,6 +30,8 @@ class Product(TimestampMixin, Base):
     price: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
     stock_quantity: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    video_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    video_mime_type: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
 
     store: Mapped["Store"] = relationship("Store", back_populates="products")
     images: Mapped[list["ProductImage"]] = relationship(

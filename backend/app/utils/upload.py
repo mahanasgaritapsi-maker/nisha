@@ -19,6 +19,9 @@ ALLOWED_IMAGE_CONTENT_TYPES = {
     "image/gif",
 }
 
+ALLOWED_VIDEO_EXTENSIONS = {".mp4", ".webm"}
+ALLOWED_VIDEO_CONTENT_TYPES = {"video/mp4", "video/webm"}
+
 
 @dataclass(slots=True)
 class UploadedMedia:
@@ -42,6 +45,14 @@ def _detect_extension_from_magic(header: bytes) -> str | None:
     return None
 
 
+def _detect_video_extension_from_magic(header: bytes) -> str | None:
+    if len(header) >= 12 and header[4:8] == b"ftyp":
+        return ".mp4"
+    if header.startswith(b"\x1a\x45\xdf\xa3"):
+        return ".webm"
+    return None
+
+
 def _extension_from_filename(filename: str | None) -> str | None:
     if not filename or "." not in filename:
         return None
@@ -49,6 +60,13 @@ def _extension_from_filename(filename: str | None) -> str | None:
     if ext == ".jpeg":
         ext = ".jpg"
     return ext if ext in ALLOWED_IMAGE_EXTENSIONS else None
+
+
+def _video_extension_from_filename(filename: str | None) -> str | None:
+    if not filename or "." not in filename:
+        return None
+    ext = "." + filename.rsplit(".", 1)[-1].lower()
+    return ext if ext in ALLOWED_VIDEO_EXTENSIONS else None
 
 
 def _extensions_compatible(declared: str, detected: str) -> bool:
@@ -148,6 +166,44 @@ async def save_uploaded_media(
         url=public_url,
         thumbnail_url=None,
         mime_type=content_type or file.content_type,
+        width=None,
+        height=None,
+        filename=file.filename,
+    )
+
+
+async def save_uploaded_video(file: UploadFile, *, subdir: str) -> UploadedMedia:
+    """Validate and store a product video (MP4/WebM, max MAX_VIDEO_UPLOAD_SIZE_BYTES)."""
+    if not file.filename:
+        raise ServiceError("File is required", status_code=422)
+
+    content = await file.read()
+    if not content:
+        raise ServiceError("Empty file", status_code=422)
+    if len(content) > settings.MAX_VIDEO_UPLOAD_SIZE_BYTES:
+        raise ServiceError("Video file too large", status_code=422)
+
+    content_type = (file.content_type or "").lower()
+    magic_ext = _detect_video_extension_from_magic(content[:16])
+    declared_ext = _video_extension_from_filename(file.filename)
+
+    if magic_ext is None and content_type not in ALLOWED_VIDEO_CONTENT_TYPES:
+        raise ServiceError("Only MP4 or WebM video files are allowed", status_code=422)
+
+    ext = magic_ext or declared_ext or ".mp4"
+    if content_type in ALLOWED_VIDEO_CONTENT_TYPES:
+        mime = content_type
+    elif ext == ".webm":
+        mime = "video/webm"
+    else:
+        mime = "video/mp4"
+
+    stored_name = f"{uuid.uuid4().hex}{ext}"
+    public_url = _store_media(subdir, stored_name, content, mime)
+    return UploadedMedia(
+        url=public_url,
+        thumbnail_url=None,
+        mime_type=mime,
         width=None,
         height=None,
         filename=file.filename,

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.schemas.public import MediaUploadResponse
 from app.services.exceptions import ServiceError
-from app.utils.upload import save_uploaded_media
+from app.utils.upload import save_uploaded_media, save_uploaded_video
 
 router = APIRouter(prefix="/uploads", tags=["public-uploads"])
 
@@ -30,6 +30,19 @@ async def upload_image(
     del db
     try:
         media = await save_uploaded_media(file, subdir="media", image_only=True)
+    except ServiceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.message) from exc
+    return MediaUploadResponse.model_validate(media)
+
+
+@router.post("/videos", response_model=MediaUploadResponse)
+async def upload_video(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+) -> MediaUploadResponse:
+    del db
+    try:
+        media = await save_uploaded_video(file, subdir="media")
     except ServiceError as exc:
         raise HTTPException(status_code=exc.status_code, detail=exc.message) from exc
     return MediaUploadResponse.model_validate(media)
