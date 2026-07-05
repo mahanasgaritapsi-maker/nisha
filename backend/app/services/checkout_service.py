@@ -211,6 +211,15 @@ def create_guest_order(
     store = get_active_store_by_slug(db, slug)
     payment_method = _get_payment_method(db, store.id, data.payment_method_id)
 
+    if not data.items:
+        raise ServiceError("سبد خرید نمی‌تواند خالی باشد", status_code=422)
+
+    if not data.buyer_name.strip():
+        raise ServiceError("نام گیرنده الزامی است", status_code=422)
+
+    if not data.buyer_address.strip():
+        raise ServiceError("آدرس الزامی است", status_code=422)
+
     phone = data.buyer_phone.strip()
     if not re.match(r"^\+?[\d\s\-()]{7,20}$", phone):
         raise ServiceError("شماره تماس نامعتبر است", status_code=422)

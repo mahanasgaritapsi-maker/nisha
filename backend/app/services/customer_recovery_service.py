@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-import random
+import secrets
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -17,7 +17,7 @@ _MAX_VERIFY_ATTEMPTS = 5
 
 
 def _generate_code() -> str:
-    return f"{random.randint(0, 999999):06d}"
+    return f"{secrets.randbelow(1_000_000):06d}"
 
 
 def _utcnow() -> datetime:

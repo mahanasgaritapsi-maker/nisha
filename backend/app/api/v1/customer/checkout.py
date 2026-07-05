@@ -50,6 +50,6 @@ def create_customer_order(
                 country=payload.country,
                 is_default=False,
             )
-        except ServiceError as exc:
-            raise HTTPException(status_code=exc.status_code, detail=exc.message) from exc
+        except ServiceError:
+            pass
     return order

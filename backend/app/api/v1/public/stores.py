@@ -62,6 +62,7 @@ def get_public_store(slug: str, db: Session = Depends(get_db)) -> PublicStorePag
                     rating=review.rating,
                     title=review.title,
                     comment=review.comment,
+                    image_urls=[image.image_url for image in review.images],
                     created_at=review.created_at,
                 )
                 for review in reviews
