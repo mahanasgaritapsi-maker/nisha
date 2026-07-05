@@ -46,7 +46,8 @@ export function MessageSellerButton({ storeId }: MessageSellerButtonProps) {
 
   return (
     <Button variant="secondary" size="sm" disabled={loading} onClick={() => void handleClick()}>
-      ارسال پیام به فروشنده
+      <span className="sm:hidden">پیام</span>
+      <span className="hidden sm:inline">ارسال پیام به فروشنده</span>
     </Button>
   );
 }

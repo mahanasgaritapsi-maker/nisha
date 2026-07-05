@@ -11,6 +11,7 @@ import { ProductCard } from "@/components/store/ProductCard";
 import { Badge } from "@/components/ui/Badge";
 import { Card, CardContent } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorAlert } from "@/components/ui/ErrorAlert";
 import {
   SocialIcon,
   getSocialPlatformLabel,
@@ -142,8 +143,12 @@ export function StorePageClient({ slug, initialData, initialError }: StorePageCl
     );
   }
 
-  if (error || !data) {
-    return <EmptyState title="فروشگاه پیدا نشد" description={error ?? "این فروشگاه وجود ندارد یا فعال نیست."} />;
+  if (error) {
+    return <ErrorAlert message={error} className="mx-auto max-w-xl" />;
+  }
+
+  if (!data) {
+    return <EmptyState title="فروشگاه پیدا نشد" description="این فروشگاه وجود ندارد یا فعال نیست." />;
   }
 
   const { store, products, review_summary } = data;
@@ -184,7 +189,7 @@ export function StorePageClient({ slug, initialData, initialError }: StorePageCl
                     <Badge className="bg-white/10 text-white">میانگین {ratingText}</Badge>
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
                   <MessageSellerButton storeId={store.id} />
                   {store.website && (
                     <a
@@ -319,7 +324,7 @@ export function StorePageClient({ slug, initialData, initialError }: StorePageCl
                               <img
                                 key={image}
                                 src={resolveMediaUrl(image)}
-                                alt=""
+                                alt={`تصویر نظر ${review.customer_name}`}
                                 className="h-16 w-16 shrink-0 rounded-lg border border-border object-cover"
                               />
                             ))}

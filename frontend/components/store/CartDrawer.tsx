@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { formatMoney } from "@/lib/format";
 import { resolveMediaUrl } from "@/lib/media";
@@ -17,6 +18,15 @@ type CartDrawerProps = {
 export function CartDrawer({ open, slug, onClose }: CartDrawerProps) {
   const { items, subtotal, updateQuantity, removeItem, itemCount } = useCart();
 
+  useEffect(() => {
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
+
   return (
     <>
       {open && (
@@ -29,7 +39,7 @@ export function CartDrawer({ open, slug, onClose }: CartDrawerProps) {
       )}
       <aside
         className={cn(
-          "fixed bottom-0 end-0 z-50 flex max-h-[85vh] w-full flex-col border-s border-border bg-surface shadow-xl transition-transform duration-200 sm:max-w-md lg:static lg:z-auto lg:max-h-none lg:w-80 lg:shrink-0 lg:translate-x-0 lg:rounded-xl lg:border lg:shadow-sm",
+          "fixed bottom-0 end-0 z-50 flex max-h-[85vh] w-full flex-col border-e border-border bg-surface shadow-xl transition-transform duration-200 sm:max-w-md lg:static lg:z-auto lg:max-h-none lg:w-80 lg:shrink-0 lg:translate-x-0 lg:rounded-xl lg:border lg:shadow-sm",
           open ? "translate-y-0" : "translate-y-full lg:translate-y-0",
           !open && "pointer-events-none opacity-0 lg:pointer-events-auto lg:opacity-100",
         )}
@@ -68,7 +78,11 @@ export function CartDrawer({ open, slug, onClose }: CartDrawerProps) {
                     <p className="truncate font-medium text-foreground">{item.title}</p>
                     <p className="text-sm text-foreground-muted">{formatMoney(item.price)} برای هر عدد</p>
                     <div className="mt-2 flex items-center gap-2">
+                      <label className="sr-only" htmlFor={`cart-qty-${item.productId}`}>
+                        تعداد {item.title}
+                      </label>
                       <input
+                        id={`cart-qty-${item.productId}`}
                         type="number"
                         min={1}
                         max={item.stockQuantity}
@@ -95,7 +109,7 @@ export function CartDrawer({ open, slug, onClose }: CartDrawerProps) {
             </ul>
           )}
         </div>
-        <div className="border-t border-border p-4">
+        <div className="border-t border-border p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
           <div className="mb-3 flex justify-between text-sm">
             <span className="text-foreground-muted">جمع جزء</span>
             <span className="font-semibold">{formatMoney(subtotal)}</span>

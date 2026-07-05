@@ -10,7 +10,9 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorAlert } from "@/components/ui/ErrorAlert";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { useToast } from "@/contexts/ToastContext";
 import { formatMoney, formatDateTime } from "@/lib/format";
 import { paths } from "@/lib/auth/paths";
 import type { PublicProductDetailResponse } from "@/types/public/store";
@@ -32,6 +34,7 @@ const FIELD_TYPE_LABELS: Record<string, string> = {
 
 export function ProductPageClient({ slug, productId }: ProductPageClientProps) {
   const { addItem } = useCart();
+  const toast = useToast();
   const [data, setData] = useState<PublicProductDetailResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -75,11 +78,15 @@ export function ProductPageClient({ slug, productId }: ProductPageClientProps) {
     );
   }
 
-  if (error || !data) {
+  if (error) {
+    return <ErrorAlert message={error} className="mx-auto max-w-xl" />;
+  }
+
+  if (!data) {
     return (
       <EmptyState
         title="محصول در دسترس نیست"
-        description={error ?? "این محصول وجود ندارد یا فعال نیست."}
+        description="این محصول وجود ندارد یا فعال نیست."
       />
     );
   }
@@ -91,6 +98,7 @@ export function ProductPageClient({ slug, productId }: ProductPageClientProps) {
 
   function handleAddToCart() {
     addItem(product, quantity);
+    toast.success("محصول به سبد خرید اضافه شد");
   }
 
   return (
@@ -152,7 +160,7 @@ export function ProductPageClient({ slug, productId }: ProductPageClientProps) {
               </div>
               <div>
                 <p className="text-sm text-foreground-muted">{store.name}</p>
-                <h1 className="mt-1 text-3xl font-bold text-foreground">{product.title}</h1>
+                <h1 className="mt-1 text-2xl font-bold text-foreground sm:text-3xl">{product.title}</h1>
                 <p className="mt-2 text-xl font-semibold text-foreground sm:text-2xl">{formatMoney(product.price)}</p>
               </div>
               {product.description && <p className="text-sm leading-6 text-foreground-muted">{product.description}</p>}
@@ -169,10 +177,11 @@ export function ProductPageClient({ slug, productId }: ProductPageClientProps) {
                       size="md"
                       onClick={() => setQuantity((current) => Math.max(1, current - 1))}
                       disabled={quantity <= 1}
+                      aria-label="کاهش تعداد"
                     >
                       -
                     </Button>
-                    <div className="min-w-14 rounded-full border border-border bg-surface px-4 py-2 text-center text-sm font-medium text-foreground">
+                    <div className="min-w-14 rounded-full border border-border bg-surface px-4 py-2 text-center text-sm font-medium text-foreground" aria-live="polite">
                       {quantity}
                     </div>
                     <Button
@@ -181,6 +190,7 @@ export function ProductPageClient({ slug, productId }: ProductPageClientProps) {
                       size="md"
                       onClick={() => setQuantity((current) => Math.min(product.stock_quantity, current + 1))}
                       disabled={quantity >= product.stock_quantity}
+                      aria-label="افزایش تعداد"
                     >
                       +
                     </Button>

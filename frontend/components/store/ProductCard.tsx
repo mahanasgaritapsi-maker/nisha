@@ -83,11 +83,11 @@ export function ProductCard({ product, storeSlug }: ProductCardProps) {
           </span>
           <span className="text-sm text-foreground-muted">{product.stock_quantity} موجود</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <label className="sr-only" htmlFor={`qty-${product.id}`}>
             تعداد
           </label>
-          <div className="flex items-center gap-2 rounded-full border border-border px-2 py-1">
+          <div className="flex items-center gap-2 self-start rounded-full border border-border px-2 py-1">
             <Button
               type="button"
               variant="ghost"
@@ -113,7 +113,7 @@ export function ProductCard({ product, storeSlug }: ProductCardProps) {
             </Button>
           </div>
           <Button
-            className="flex-1"
+            className="w-full sm:flex-1"
             size="sm"
             onClick={handleAdd}
             disabled={product.stock_quantity <= 0}
