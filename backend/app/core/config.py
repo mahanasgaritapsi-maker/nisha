@@ -39,6 +39,19 @@ class Settings(BaseSettings):
     S3_SECRET_ACCESS_KEY: str = ""
     S3_REGION: str = ""
     S3_PUBLIC_BASE_URL: str = ""
+    NOTIFY_WORKER_ENABLED: bool = True
+    NOTIFY_POLL_INTERVAL_SECONDS: int = 15
+    NOTIFY_MAX_ATTEMPTS: int = 5
+    SMS_PROVIDER: Literal["console", "kavenegar"] = "console"
+    SMS_SENDER: str = ""
+    KAVENEGAR_API_KEY: str = ""
+    EMAIL_PROVIDER: Literal["console", "smtp"] = "console"
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 587
+    SMTP_USERNAME: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_USE_TLS: bool = True
+    EMAIL_FROM: str = ""
 
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod

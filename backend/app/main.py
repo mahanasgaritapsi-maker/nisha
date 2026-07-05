@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -52,7 +53,20 @@ async def lifespan(app: FastAPI):
         alembic_cfg.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
         alembic_upgrade(alembic_cfg, "head")
 
+    notification_stop = asyncio.Event()
+    notification_task = None
+    if settings.NOTIFY_WORKER_ENABLED and settings.DATABASE_URL.startswith("postgresql"):
+        from app.services.notification_service import notification_worker_loop
+
+        notification_task = asyncio.create_task(
+            notification_worker_loop(notification_stop)
+        )
+
     yield
+
+    if notification_task is not None:
+        notification_stop.set()
+        await notification_task
 
 
 app = FastAPI(
