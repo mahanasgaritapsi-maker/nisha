@@ -29,7 +29,7 @@ class AppBrandMark extends StatelessWidget {
       ),
       child: const Center(
         child: Text(
-          'N',
+          'ن',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w800,
