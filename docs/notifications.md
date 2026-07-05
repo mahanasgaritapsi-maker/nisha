@@ -13,8 +13,31 @@ Nisha uses a **transactional outbox** for notifications:
    the row.
 
 Templates are Persian and live in `TEMPLATES` in the service module. Current
-templates: `order_placed_buyer`, `order_placed_seller`, `order_status_changed`,
-`test_message`.
+templates: `order_placed_buyer`, `order_placed_seller`,
+`payment_uploaded_seller`, `order_status_changed`, `test_message`.
+
+## Automatic order-lifecycle hooks (task 12)
+
+Implemented in `backend/app/services/order_notification_service.py`:
+
+| Event | Recipient | Channel | Template |
+| --- | --- | --- | --- |
+| Order placed | buyer (`buyer_phone`) | SMS | `order_placed_buyer` |
+| Order placed | seller (store owner email) | Email | `order_placed_seller` |
+| Payment proof uploaded | seller | Email | `payment_uploaded_seller` |
+| Status changed to confirmed / rejected / preparing / shipped / delivered / cancelled | buyer | SMS | `order_status_changed` |
+
+Hook points:
+
+- `checkout_service.create_guest_order` calls `notify_order_placed` inside the
+  order transaction.
+- `order_access_service.append_status_history` calls `notify_status_change`,
+  so every recorded status change (seller confirm/reject/update, guest
+  payment-proof upload, customer-portal cancellation) is covered
+  automatically without extra wiring.
+
+Persian status labels live in `STATUS_LABELS` in the same module. Enqueue
+errors are logged and **never break the order flow**.
 
 ## Providers
 
@@ -71,9 +94,6 @@ enqueue_sms(
 )
 # the surrounding service commits; the worker delivers it asynchronously
 ```
-
-Order-lifecycle hooks (enqueue on order placement and status changes) are
-implemented separately as roadmap task 12.
 
 ## Operations
 

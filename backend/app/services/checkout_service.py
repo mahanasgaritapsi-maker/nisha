@@ -23,6 +23,7 @@ from app.schemas.public import (
     OrderItemFieldValueInput,
     OrderItemInput,
 )
+from app.services import order_notification_service
 from app.services.exceptions import ServiceError
 from app.services.product_service import build_form_field_snapshot
 from app.services.public_store_service import get_active_store_by_slug
@@ -267,6 +268,10 @@ def create_guest_order(
 
         for line, item, order_item in zip(line_items, data.items, created_items, strict=True):
             _persist_field_values(db, order_item, item.field_values, line.product)
+
+        # Roadmap task 12: enqueue buyer/seller notifications in the same
+        # transaction (transactional outbox). Never raises.
+        order_notification_service.notify_order_placed(db, order, store)
 
         db.commit()
     except IntegrityError as exc:
