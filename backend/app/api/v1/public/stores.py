@@ -1,4 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from decimal import Decimal
+from typing import Literal
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
@@ -8,6 +11,7 @@ from app.schemas.public import (
     GuestOrderCreate,
     PublicPaymentMethod,
     PublicProduct,
+    PublicProductListResponse,
     PublicStorePageResponse,
     PublicStoreProfile,
     PublicStoreReview,
@@ -15,10 +19,23 @@ from app.schemas.public import (
     PublicStoreSocialLink,
     CheckoutResponse,
 )
-from app.services import checkout_service, public_store_service
+from app.services import checkout_service, product_search_service, public_store_service
 from app.services.exceptions import ServiceError
 
 router = APIRouter(prefix="/stores", tags=["public-stores"])
+
+
+def _public_product(product) -> PublicProduct:
+    return PublicProduct(
+        id=product.id,
+        title=product.title,
+        description=product.description,
+        price=product.price,
+        stock_quantity=product.stock_quantity,
+        images=[ProductImageResponse.model_validate(img) for img in product.images],
+        form_fields=[ProductFormFieldResponse.model_validate(field) for field in product.form_fields],
+        image_count=len(product.images),
+    )
 
 
 @router.get("/{slug}", response_model=PublicStorePageResponse, response_model_exclude_none=True)
@@ -37,19 +54,7 @@ def get_public_store(slug: str, db: Session = Depends(get_db)) -> PublicStorePag
     return PublicStorePageResponse(
         store=store_profile,
         social_links=[PublicStoreSocialLink.model_validate(link) for link in social_links],
-        products=[
-            PublicProduct(
-                id=product.id,
-                title=product.title,
-                description=product.description,
-                price=product.price,
-                stock_quantity=product.stock_quantity,
-                images=[ProductImageResponse.model_validate(img) for img in product.images],
-                form_fields=[ProductFormFieldResponse.model_validate(field) for field in product.form_fields],
-                image_count=len(product.images),
-            )
-            for product in products
-        ],
+        products=[_public_product(product) for product in products],
         payment_methods=[PublicPaymentMethod.model_validate(m) for m in payment_methods],
         review_summary=PublicStoreReviewSummary(
             average_rating=average_rating,
@@ -82,16 +87,7 @@ def get_public_product(slug: str, product_id: int, db: Session = Depends(get_db)
     except ServiceError as exc:
         raise HTTPException(status_code=exc.status_code, detail=exc.message) from exc
 
-    product_payload = PublicProduct(
-        id=product.id,
-        title=product.title,
-        description=product.description,
-        price=product.price,
-        stock_quantity=product.stock_quantity,
-        images=[ProductImageResponse.model_validate(img) for img in product.images],
-        form_fields=[ProductFormFieldResponse.model_validate(field) for field in product.form_fields],
-        image_count=len(product.images),
-    )
+    product_payload = _public_product(product)
     review_payloads = [
         PublicStoreReview(
             id=review.id,
@@ -121,27 +117,49 @@ def get_public_product(slug: str, product_id: int, db: Session = Depends(get_db)
     )
 
 
-@router.get("/{slug}/products", response_model=list[PublicProduct], response_model_exclude_none=True)
-def list_public_products(slug: str, db: Session = Depends(get_db)) -> list[PublicProduct]:
+@router.get(
+    "/{slug}/products",
+    response_model=PublicProductListResponse,
+    response_model_exclude_none=True,
+)
+def list_public_products(
+    slug: str,
+    q: str | None = Query(default=None, max_length=200),
+    min_price: Decimal | None = Query(default=None, ge=0),
+    max_price: Decimal | None = Query(default=None, ge=0),
+    in_stock: bool = Query(default=False),
+    sort: Literal["newest", "cheapest", "most_expensive", "best_selling"] = Query(default="newest"),
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(
+        default=product_search_service.DEFAULT_PAGE_SIZE,
+        ge=1,
+        le=product_search_service.MAX_PAGE_SIZE,
+    ),
+    db: Session = Depends(get_db),
+) -> PublicProductListResponse:
     try:
         store = public_store_service.get_active_store_by_slug(db, slug)
-        products = public_store_service.list_available_products(db, store.id)
+        products, total = product_search_service.search_products(
+            db,
+            store.id,
+            q=q,
+            min_price=min_price,
+            max_price=max_price,
+            in_stock=in_stock,
+            sort=sort,
+            page=page,
+            page_size=page_size,
+        )
     except ServiceError as exc:
         raise HTTPException(status_code=exc.status_code, detail=exc.message) from exc
 
-    return [
-        PublicProduct(
-            id=product.id,
-            title=product.title,
-            description=product.description,
-            price=product.price,
-            stock_quantity=product.stock_quantity,
-            images=[ProductImageResponse.model_validate(img) for img in product.images],
-            form_fields=[ProductFormFieldResponse.model_validate(field) for field in product.form_fields],
-            image_count=len(product.images),
-        )
-        for product in products
-    ]
+    return PublicProductListResponse(
+        items=[_public_product(product) for product in products],
+        total=total,
+        page=page,
+        page_size=page_size,
+        has_more=page * page_size < total,
+    )
 
 
 @router.post(

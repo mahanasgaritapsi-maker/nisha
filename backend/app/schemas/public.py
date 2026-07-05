@@ -97,6 +97,16 @@ class PublicStorePageResponse(BaseModel):
     review_summary: PublicStoreReviewSummary
 
 
+class PublicProductListResponse(BaseModel):
+    """Paginated result of the storefront product search (roadmap task 14)."""
+
+    items: list[PublicProduct] = Field(default_factory=list)
+    total: int = 0
+    page: int = 1
+    page_size: int = 24
+    has_more: bool = False
+
+
 class PublicProductDetailResponse(BaseModel):
     store: PublicStoreProfile
     product: PublicProduct
