@@ -2,7 +2,7 @@
 
 این سند خلاصه همه کارهایی است که تا الان روی زیرساخت و فازهای نقشه راه انجام شده، به‌علاوه **چک‌لیست دقیق کارهایی که خودت باید انجام بدهی** تا سیستم بدون مشکل بالا بیاید. هر بخش به سند فنی کامل‌ترش لینک شده است.
 
-> آخرین به‌روزرسانی: تیر ۱۴۰۵ (ژوئیه ۲۰۲۶) — تا پایان تسک ۱۲ نقشه راه
+> آخرین به‌روزرسانی: تیر ۱۴۰۵ (ژوئیه ۲۰۲۶) — تا پایان تسک ۱۳ نقشه راه
 
 ---
 
@@ -32,6 +32,7 @@
 | ۱۰ — تست بار | اسکریپت‌های k6 (اسموک و بار) | `docs/load-testing.md` |
 | ۱۱ — سرویس نوتیفیکیشن | صف نوتیفیکیشن (outbox) + ورکر پس‌زمینه + پیامک کاوه‌نگار + ایمیل SMTP + قالب‌های فارسی | `docs/notifications.md` |
 | ۱۲ — نوتیفیکیشن چرخه سفارش | پیامک به خریدار و ایمیل به فروشنده در ثبت سفارش، ثبت رسید پرداخت و هر تغییر وضعیت | `docs/notifications.md` |
+| ۱۳ — چت Real-time | چت WebSocket زنده برای فروشنده/مشتری/مهمان + رویداد badge خوانده‌نشده؛ polling قبلی به‌عنوان fallback حفظ شده | `docs/chat-realtime.md` |
 
 ---
 
@@ -98,6 +99,7 @@ docker compose -f docker-compose.prod.yml up -d --build
 
 - مایگریشن‌های دیتابیس خودکار اجرا می‌شوند.
 - بک‌اند روی `127.0.0.1:9000` و فرانت روی `127.0.0.1:3000` گوش می‌دهند؛ جلوی آن‌ها یک reverse proxy مثل Nginx یا Caddy با SSL بگذار.
+- ⚠️ برای کار کردن چت زنده، در Nginx باید هدرهای Upgrade برای مسیر `/api/v1/ws/` فعال باشند — نمونه کانفیگ آماده در `docs/chat-realtime.md` بخش «Reverse proxy».
 
 ### گام ۴ — بررسی سلامت
 
@@ -146,6 +148,12 @@ docker compose -f docker-compose.prod.yml logs backend --tail 50
 
 خطا در صف نوتیفیکیشن **هرگز ثبت سفارش را خراب نمی‌کند**؛ ارسال‌های ناموفق تا ۵ بار با فاصله تلاش مجدد می‌شوند. مدیریت صف: `docs/notifications.md` بخش Operations.
 
+### چت زنده (تسک ۱۳)
+
+- چت فروشگاه حالا از WebSocket استفاده می‌کند: پیام جدید و badge خوانده‌نشده **بدون رفرش** به‌روز می‌شوند.
+- اگر WebSocket در دسترس نباشد (پروکسی قدیمی، مرورگر خاص و...)، همان polling قبلی به‌صورت خودکار کار می‌کند — چیزی از دست نمی‌رود.
+- تنها کار تو: فعال کردن هدرهای Upgrade در Nginx (گام ۳). جزئیات فنی و پروتکل: `docs/chat-realtime.md`
+
 ---
 
 ## ۵. بکاپ و بازیابی
@@ -164,6 +172,7 @@ docker compose -f docker-compose.prod.yml logs backend --tail 50
 - [ ] ساخت باکت S3 و گذاشتن کلیدها (یا آگاهانه با `local` ادامه بده)
 - [ ] حساب کاوه‌نگار + `KAVENEGAR_API_KEY`
 - [ ] تنظیم SMTP برای ایمیل
+- [ ] فعال کردن هدرهای WebSocket در کانفیگ Nginx (`docs/chat-realtime.md`)
 - [ ] یک بار بالا آوردن محیط استیجینگ (`docs/staging.md`)
 - [ ] اجرای تست بار k6 روی استیجینگ (`docs/load-testing.md`)
 - [ ] تمرین بازیابی بکاپ (`docs/backup.md`)
@@ -179,6 +188,7 @@ docker compose -f docker-compose.prod.yml logs backend --tail 50
 | خطای ۵۰۰ | لاگ JSON بک‌اند را ببین؛ `request_id` خطا را دنبال کن؛ اگر Sentry فعال است همان‌جا جزئیات هست |
 | پیامک/ایمیل نمی‌رسد | ۱) مطمئن شو provider روی `console` نیست ۲) جدول صف را چک کن: `SELECT * FROM notification_outbox ORDER BY id DESC LIMIT 20;` ستون `last_error` علت را می‌گوید |
 | تصاویر آپلود نمی‌شوند | اگر `STORAGE_BACKEND=s3` است، کلیدها و دسترسی public-read باکت را چک کن (`docs/object-storage.md`) |
+| چت زنده کار نمی‌کند ولی پیام‌ها با رفرش می‌آیند | هدرهای Upgrade در Nginx فعال نیستند — بخش Reverse proxy در `docs/chat-realtime.md` |
 | دیتابیس خراب شد | از آخرین بکاپ در `backups/` طبق `docs/backup.md` بازیابی کن |
 
 ---
@@ -195,5 +205,6 @@ docker compose -f docker-compose.prod.yml logs backend --tail 50
 | `docs/object-storage.md` | استوریج فایل‌ها (local/S3) |
 | `docs/load-testing.md` | تست بار با k6 |
 | `docs/notifications.md` | سرویس نوتیفیکیشن و هوک‌های سفارش |
+| `docs/chat-realtime.md` | چت بلادرنگ با WebSocket |
 
 > از این به بعد هر تسک جدیدی که انجام شود، هم سند فنی خودش به‌روز می‌شود و هم جدول بخش ۲ و چک‌لیست بخش ۶ همین سند.

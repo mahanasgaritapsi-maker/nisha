@@ -16,6 +16,7 @@ from app.api.v1 import (
     health_router,
     public_router,
     seller_router,
+    ws_router,
 )
 from app.core.config import settings
 from app.core.error_handlers import (
@@ -99,6 +100,7 @@ app.include_router(seller_router, prefix="/api/v1")
 app.include_router(public_router, prefix="/api/v1")
 app.include_router(admin_router, prefix="/api/v1")
 app.include_router(customer_router, prefix="/api/v1")
+app.include_router(ws_router, prefix="/api/v1")
 
 upload_dir = Path(settings.UPLOAD_DIR)
 upload_dir.mkdir(parents=True, exist_ok=True)

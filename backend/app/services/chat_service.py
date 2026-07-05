@@ -20,6 +20,7 @@ from app.schemas.chat import (
     MessageCreate,
     MessageResponse,
 )
+from app.services.chat_realtime import manager as realtime_manager
 from app.services.exceptions import ServiceError
 
 
@@ -426,7 +427,16 @@ def _send_message(
     db.add(message)
     db.commit()
     db.refresh(message)
-    return _message_to_response(message)
+    response = _message_to_response(message)
+    # Roadmap task 13: push the new message to connected WebSocket clients.
+    realtime_manager.notify_new_message(
+        conversation_id=conversation.id,
+        store_id=conversation.store_id,
+        customer_id=conversation.customer_id,
+        sender_is_customer=sender_type == SenderType.CUSTOMER,
+        message=response.model_dump(mode="json"),
+    )
+    return response
 
 
 def send_customer_message(
