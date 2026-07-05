@@ -72,3 +72,5 @@ jobs:
         env:
           JWT_SECRET_KEY: ci-validation-secret-key-0123456789abcdef
           POSTGRES_PASSWORD: ci-validation-password
+          CORS_ORIGINS: http://localhost:3000
+          NEXT_PUBLIC_API_URL: http://localhost:8000
