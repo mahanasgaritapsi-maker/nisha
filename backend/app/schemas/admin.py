@@ -128,7 +128,11 @@ class AdminOrderUpdateRequest(BaseModel):
     buyer_name: str | None = Field(default=None, min_length=1, max_length=255)
     buyer_phone: str | None = Field(default=None, min_length=1, max_length=50)
     buyer_address: str | None = None
+<<<<<<< HEAD
     buyer_note: str | None = Field(default=None, max_length=1000)
+=======
+    buyer_note: str | None = None
+>>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
     status: OrderStatus | None = None
     note: str | None = None
 

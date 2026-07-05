@@ -175,7 +175,11 @@ class GuestOrderCreate(BaseModel):
     buyer_name: str = Field(min_length=1, max_length=255)
     buyer_phone: str = Field(min_length=1, max_length=50)
     buyer_address: str = Field(min_length=1)
+<<<<<<< HEAD
     buyer_note: str | None = Field(default=None, max_length=1000)
+=======
+    buyer_note: str | None = None
+>>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
     payment_method_id: int
     items: list[OrderItemInput] = Field(min_length=1)
 

@@ -25,8 +25,12 @@ class Settings(BaseSettings):
     API_PORT: int = 8000
     JWT_SECRET_KEY: str
     JWT_ALGORITHM: str = "HS256"
+<<<<<<< HEAD
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+=======
+    JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 10080
+>>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
     LOG_LEVEL: str = "INFO"
 
     @field_validator("CORS_ORIGINS", mode="before")

@@ -6,6 +6,7 @@ import type {
   MessageCreate,
 } from "@/types/chat";
 
+<<<<<<< HEAD
 export interface ConversationListResponse {
   items: ConversationListItem[];
   total: number;
@@ -17,6 +18,10 @@ export function listConversations(page = 1, pageSize = 20): Promise<Conversation
   return apiGet<ConversationListResponse>(
     `/api/v1/seller/conversations?page=${page}&page_size=${pageSize}`,
   ).then((res) => res.items);
+=======
+export function listConversations(): Promise<ConversationListItem[]> {
+  return apiGet<ConversationListItem[]>("/api/v1/seller/conversations");
+>>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
 }
 
 export function getConversation(id: number): Promise<ConversationDetail> {

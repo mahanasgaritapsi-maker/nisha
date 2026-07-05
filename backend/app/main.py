@@ -5,8 +5,11 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+<<<<<<< HEAD
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
+=======
+>>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
 
 from app.api.v1 import (
     admin_router,
@@ -22,7 +25,10 @@ from app.core.error_handlers import (
     unhandled_exception_handler,
     validation_error_handler,
 )
+<<<<<<< HEAD
 from app.core.limiter import limiter, rate_limit_exceeded_handler
+=======
+>>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
 from app.core.logging_config import RequestLoggingMiddleware, setup_logging
 from app.services.exceptions import ServiceError
 
@@ -54,10 +60,13 @@ app.add_exception_handler(ServiceError, service_error_handler)
 app.add_exception_handler(RequestValidationError, validation_error_handler)
 app.add_exception_handler(Exception, unhandled_exception_handler)
 
+<<<<<<< HEAD
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
 app.add_middleware(SlowAPIMiddleware)
 
+=======
+>>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
 app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(
     CORSMiddleware,

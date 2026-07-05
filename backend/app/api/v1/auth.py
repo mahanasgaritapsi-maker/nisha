@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
@@ -18,6 +19,16 @@ from app.schemas.auth import (
     TokenResponse,
     UserResponse,
 )
+=======
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+from app.api.deps import get_current_user
+from app.core.security import create_access_token
+from app.db.session import get_db
+from app.models.user import User
+from app.schemas.auth import LoginRequest, RegisterRequest, TokenResponse, UserResponse
+>>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
 from app.schemas.user_mapper import user_to_response
 from app.services.auth_service import AuthError, authenticate_user, register_seller
 
@@ -26,21 +37,30 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 def _build_token_response(user: User) -> TokenResponse:
     token = create_access_token(user_id=user.id, role=user.role.value)
+<<<<<<< HEAD
     refresh_token = create_refresh_token(user_id=user.id, role=user.role.value)
     return TokenResponse(
         access_token=token,
         refresh_token=refresh_token,
+=======
+    return TokenResponse(
+        access_token=token,
+>>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
         user=user_to_response(user),
     )
 
 
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
+<<<<<<< HEAD
 @limiter.limit("3/minute")
 def register(
     request: Request,
     payload: RegisterRequest,
     db: Session = Depends(get_db),
 ) -> TokenResponse:
+=======
+def register(payload: RegisterRequest, db: Session = Depends(get_db)) -> TokenResponse:
+>>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
     try:
         user = register_seller(
             db,
@@ -54,12 +74,16 @@ def register(
 
 
 @router.post("/login", response_model=TokenResponse)
+<<<<<<< HEAD
 @limiter.limit("5/minute")
 def login(
     request: Request,
     payload: LoginRequest,
     db: Session = Depends(get_db),
 ) -> TokenResponse:
+=======
+def login(payload: LoginRequest, db: Session = Depends(get_db)) -> TokenResponse:
+>>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
     try:
         user = authenticate_user(
             db,
@@ -71,6 +95,7 @@ def login(
     return _build_token_response(user)
 
 
+<<<<<<< HEAD
 @router.post("/refresh", response_model=TokenResponse)
 def refresh(payload: RefreshRequest, db: Session = Depends(get_db)) -> TokenResponse:
     try:
@@ -97,6 +122,8 @@ def refresh(payload: RefreshRequest, db: Session = Depends(get_db)) -> TokenResp
     return _build_token_response(user)
 
 
+=======
+>>>>>>> 11bf578476c05d667376c7b9fff2f0778bebdd66
 @router.get("/me", response_model=UserResponse)
 def me(current_user: User = Depends(get_current_user)) -> UserResponse:
     return user_to_response(current_user)
