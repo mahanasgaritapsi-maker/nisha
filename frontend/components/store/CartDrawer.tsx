@@ -62,8 +62,10 @@ export function CartDrawer({ open, slug, onClose }: CartDrawerProps) {
             </div>
           ) : (
             <ul className="space-y-4">
-              {items.map((item) => (
-                <li key={item.productId} className="flex gap-3">
+              {items.map((item) => {
+                const lineKey = `${item.productId}-${item.variantId ?? "base"}`;
+                return (
+                <li key={lineKey} className="flex gap-3">
                   <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-surface-muted">
                     {item.imageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -76,26 +78,29 @@ export function CartDrawer({ open, slug, onClose }: CartDrawerProps) {
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-medium text-foreground">{item.title}</p>
+                    {item.variantName && (
+                      <p className="text-xs text-foreground-muted">واریانت: {item.variantName}</p>
+                    )}
                     <p className="text-sm text-foreground-muted">{formatMoney(item.price)} برای هر عدد</p>
                     <div className="mt-2 flex items-center gap-2">
-                      <label className="sr-only" htmlFor={`cart-qty-${item.productId}`}>
+                      <label className="sr-only" htmlFor={`cart-qty-${lineKey}`}>
                         تعداد {item.title}
                       </label>
                       <input
-                        id={`cart-qty-${item.productId}`}
+                        id={`cart-qty-${lineKey}`}
                         type="number"
                         min={1}
                         max={item.stockQuantity}
                         value={item.quantity}
                         onChange={(e) =>
-                          updateQuantity(item.productId, Number(e.target.value))
+                          updateQuantity(item.productId, Number(e.target.value), item.variantId ?? null)
                         }
                         className="w-14 rounded border border-border bg-surface px-2 py-2 text-sm"
                       />
                       <button
                         type="button"
                         className="rounded px-3 py-2 text-xs text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950"
-                        onClick={() => removeItem(item.productId)}
+                        onClick={() => removeItem(item.productId, item.variantId ?? null)}
                       >
                         حذف
                       </button>
@@ -105,7 +110,8 @@ export function CartDrawer({ open, slug, onClose }: CartDrawerProps) {
                     {formatMoney(parseFloat(item.price) * item.quantity)}
                   </p>
                 </li>
-              ))}
+                );
+              })}
             </ul>
           )}
         </div>

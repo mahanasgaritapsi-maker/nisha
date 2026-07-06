@@ -10,10 +10,12 @@ import {
   type ReactNode,
 } from "react";
 import { loadCartFromStorage, saveCartToStorage } from "@/lib/cart/storage";
-import type { PublicProduct } from "@/types/public/store";
+import type { PublicProduct, PublicProductVariant } from "@/types/public/store";
 
 export type CartLine = {
   productId: number;
+  variantId?: number | null;
+  variantName?: string | null;
   title: string;
   price: string;
   imageUrl: string | null;
@@ -21,14 +23,22 @@ export type CartLine = {
   quantity: number;
 };
 
+function sameLine(line: CartLine, productId: number, variantId?: number | null): boolean {
+  return line.productId === productId && (line.variantId ?? null) === (variantId ?? null);
+}
+
 type CartContextValue = {
   slug: string;
   items: CartLine[];
   itemCount: number;
   subtotal: number;
-  addItem: (product: PublicProduct, quantity?: number) => void;
-  updateQuantity: (productId: number, quantity: number) => void;
-  removeItem: (productId: number) => void;
+  addItem: (
+    product: PublicProduct,
+    quantity?: number,
+    variant?: PublicProductVariant | null,
+  ) => void;
+  updateQuantity: (productId: number, quantity: number, variantId?: number | null) => void;
+  removeItem: (productId: number, variantId?: number | null) => void;
   clearCart: () => void;
   reconcileWithProducts: (products: PublicProduct[]) => void;
 };
@@ -49,47 +59,57 @@ export function CartProvider({ slug, children }: { slug: string; children: React
     saveCartToStorage(slug, items);
   }, [slug, items, hydrated]);
 
-  const addItem = useCallback((product: PublicProduct, quantity = 1) => {
-    if (product.stock_quantity <= 0) return;
-    const imageUrl = product.images[0]?.image_url ?? null;
-    setItems((prev) => {
-      const existing = prev.find((i) => i.productId === product.id);
-      if (existing) {
-        const nextQty = Math.min(existing.quantity + quantity, product.stock_quantity);
-        return prev.map((i) =>
-          i.productId === product.id
-            ? { ...i, quantity: nextQty, stockQuantity: product.stock_quantity, price: String(product.price) }
-            : i,
-        );
-      }
-      return [
-        ...prev,
-        {
-          productId: product.id,
-          title: product.title,
-          price: String(product.price),
-          imageUrl,
-          stockQuantity: product.stock_quantity,
-          quantity: Math.min(quantity, product.stock_quantity),
-        },
-      ];
-    });
-  }, []);
+  const addItem = useCallback(
+    (product: PublicProduct, quantity = 1, variant: PublicProductVariant | null = null) => {
+      const stock = variant ? variant.stock_quantity : product.stock_quantity;
+      if (stock <= 0) return;
+      const price = String(variant?.price_override ?? product.price);
+      const imageUrl = product.images[0]?.image_url ?? null;
+      setItems((prev) => {
+        const existing = prev.find((i) => sameLine(i, product.id, variant?.id ?? null));
+        if (existing) {
+          const nextQty = Math.min(existing.quantity + quantity, stock);
+          return prev.map((i) =>
+            sameLine(i, product.id, variant?.id ?? null)
+              ? { ...i, quantity: nextQty, stockQuantity: stock, price }
+              : i,
+          );
+        }
+        return [
+          ...prev,
+          {
+            productId: product.id,
+            variantId: variant?.id ?? null,
+            variantName: variant?.name ?? null,
+            title: product.title,
+            price,
+            imageUrl,
+            stockQuantity: stock,
+            quantity: Math.min(quantity, stock),
+          },
+        ];
+      });
+    },
+    [],
+  );
 
-  const updateQuantity = useCallback((productId: number, quantity: number) => {
-    setItems((prev) =>
-      prev
-        .map((i) => {
-          if (i.productId !== productId) return i;
-          if (quantity <= 0) return null;
-          return { ...i, quantity: Math.min(quantity, i.stockQuantity) };
-        })
-        .filter((i): i is CartLine => i !== null),
-    );
-  }, []);
+  const updateQuantity = useCallback(
+    (productId: number, quantity: number, variantId: number | null = null) => {
+      setItems((prev) =>
+        prev
+          .map((i) => {
+            if (!sameLine(i, productId, variantId)) return i;
+            if (quantity <= 0) return null;
+            return { ...i, quantity: Math.min(quantity, i.stockQuantity) };
+          })
+          .filter((i): i is CartLine => i !== null),
+      );
+    },
+    [],
+  );
 
-  const removeItem = useCallback((productId: number) => {
-    setItems((prev) => prev.filter((i) => i.productId !== productId));
+  const removeItem = useCallback((productId: number, variantId: number | null = null) => {
+    setItems((prev) => prev.filter((i) => !sameLine(i, productId, variantId)));
   }, []);
 
   const clearCart = useCallback(() => setItems([]), []);
@@ -100,9 +120,31 @@ export function CartProvider({ slug, children }: { slug: string; children: React
       const next: CartLine[] = [];
       for (const line of prev) {
         const product = byId.get(line.productId);
-        if (!product || product.stock_quantity <= 0) continue;
+        if (!product) continue;
+        const variantId = line.variantId ?? null;
+        if (variantId !== null) {
+          const variant = (product.variants ?? []).find((v) => v.id === variantId);
+          if (!variant || variant.stock_quantity <= 0) continue;
+          next.push({
+            ...line,
+            variantId,
+            variantName: variant.name,
+            title: product.title,
+            price: String(variant.price_override ?? product.price),
+            stockQuantity: variant.stock_quantity,
+            imageUrl: product.images[0]?.image_url ?? line.imageUrl,
+            quantity: Math.min(line.quantity, variant.stock_quantity),
+          });
+          continue;
+        }
+        // Products that now require a variant can no longer be ordered
+        // without one, so drop stale variant-less lines.
+        if ((product.variants ?? []).length > 0) continue;
+        if (product.stock_quantity <= 0) continue;
         next.push({
           ...line,
+          variantId: null,
+          variantName: null,
           title: product.title,
           price: String(product.price),
           stockQuantity: product.stock_quantity,

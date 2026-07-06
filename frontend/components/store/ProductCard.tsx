@@ -23,6 +23,7 @@ export function ProductCard({ product, storeSlug }: ProductCardProps) {
   const image = product.images[0];
   const imageUrl = image?.thumbnail_url ?? image?.image_url;
   const href = paths.customer.storeProduct(storeSlug, product.id);
+  const hasVariants = (product.variants ?? []).length > 0;
 
   function handleAdd() {
     if (product.stock_quantity <= 0) {
@@ -83,45 +84,53 @@ export function ProductCard({ product, storeSlug }: ProductCardProps) {
           </span>
           <span className="text-sm text-foreground-muted">{product.stock_quantity} موجود</span>
         </div>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <label className="sr-only" htmlFor={`qty-${product.id}`}>
-            تعداد
-          </label>
-          <div className="flex items-center gap-2 self-start rounded-full border border-border px-2 py-1">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              aria-label="کاهش تعداد"
-              onClick={() => setQty((current) => Math.max(1, current - 1))}
-              disabled={qty <= 1}
-              className="h-8 w-8 rounded-full p-0"
-            >
-              -
+        {hasVariants ? (
+          <Link href={href} className="w-full">
+            <Button className="w-full" size="sm" variant="secondary">
+              انتخاب واریانت
             </Button>
-            <span className="min-w-8 text-center text-sm font-medium">{qty}</span>
+          </Link>
+        ) : (
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <label className="sr-only" htmlFor={`qty-${product.id}`}>
+              تعداد
+            </label>
+            <div className="flex items-center gap-2 self-start rounded-full border border-border px-2 py-1">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                aria-label="کاهش تعداد"
+                onClick={() => setQty((current) => Math.max(1, current - 1))}
+                disabled={qty <= 1}
+                className="h-8 w-8 rounded-full p-0"
+              >
+                -
+              </Button>
+              <span className="min-w-8 text-center text-sm font-medium">{qty}</span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                aria-label="افزایش تعداد"
+                onClick={() => setQty((current) => Math.min(product.stock_quantity, current + 1))}
+                disabled={qty >= product.stock_quantity}
+                className="h-8 w-8 rounded-full p-0"
+              >
+                +
+              </Button>
+            </div>
             <Button
-              type="button"
-              variant="ghost"
+              className="w-full sm:flex-1"
               size="sm"
-              aria-label="افزایش تعداد"
-              onClick={() => setQty((current) => Math.min(product.stock_quantity, current + 1))}
-              disabled={qty >= product.stock_quantity}
-              className="h-8 w-8 rounded-full p-0"
+              onClick={handleAdd}
+              disabled={product.stock_quantity <= 0}
+              variant={product.stock_quantity <= 0 ? "secondary" : "primary"}
             >
-              +
+              {product.stock_quantity <= 0 ? "ناموجود" : "افزودن به سبد"}
             </Button>
           </div>
-          <Button
-            className="w-full sm:flex-1"
-            size="sm"
-            onClick={handleAdd}
-            disabled={product.stock_quantity <= 0}
-            variant={product.stock_quantity <= 0 ? "secondary" : "primary"}
-          >
-            {product.stock_quantity <= 0 ? "ناموجود" : "افزودن به سبد"}
-          </Button>
-        </div>
+        )}
       </CardContent>
     </Card>
   );
