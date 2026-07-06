@@ -21,6 +21,7 @@ from app.main import app as fastapi_app
 
 # Import model modules so metadata is populated.
 import app.models.admin_audit  # noqa: F401
+import app.models.analytics  # noqa: F401
 import app.models.conversation  # noqa: F401
 import app.models.customer_account  # noqa: F401
 import app.models.customer_portal  # noqa: F401
