@@ -24,6 +24,14 @@ type PageProps = {
   params: Promise<{ invoiceCode: string }>;
 };
 
+const PRINT_STYLES = [
+  "@media print {",
+  "  @page { size: A4; margin: 12mm; }",
+  "  body { background: #fff; }",
+  "  .invoice-print { border: none !important; box-shadow: none !important; padding: 0 !important; }",
+  "}",
+].join("\n");
+
 async function uploadSelectedImages(files: FileList | null): Promise<string[]> {
   if (!files || files.length === 0) return [];
   const uploads = await Promise.all(Array.from(files).map((file) => uploadPublicImage(file)));
@@ -45,6 +53,13 @@ export default function InvoicePage({ params }: PageProps) {
   const [reviewIsPublic, setReviewIsPublic] = useState(false);
   const [reviewImages, setReviewImages] = useState<FileList | null>(null);
   const [reviewLoading, setReviewLoading] = useState(false);
+
+  function handlePrint() {
+    const previousTitle = document.title;
+    document.title = "invoice-" + invoiceCode;
+    window.print();
+    document.title = previousTitle;
+  }
 
   async function handleUnlock(e: FormEvent) {
     e.preventDefault();
@@ -112,6 +127,7 @@ export default function InvoicePage({ params }: PageProps) {
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
+      <style>{PRINT_STYLES}</style>
       {!order ? (
         <Card className="print:hidden">
           <CardContent className="py-6">
@@ -137,14 +153,14 @@ export default function InvoicePage({ params }: PageProps) {
       ) : (
         <div className="space-y-6">
           <div className="flex justify-end gap-3 print:hidden">
-            <Button variant="secondary" onClick={() => window.print()}>
-              چاپ
+            <Button variant="secondary" onClick={handlePrint}>
+              دانلود PDF / چاپ
             </Button>
           </div>
 
           <InvoiceView order={order} />
 
-          <Card>
+          <Card className="print:hidden">
             <CardContent className="space-y-4 py-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -195,7 +211,7 @@ export default function InvoicePage({ params }: PageProps) {
           </Card>
 
           {order.status === "DELIVERED" && (
-            <Card>
+            <Card className="print:hidden">
               <CardContent className="space-y-4 py-6">
                 <div>
                   <p className="text-xs tracking-[0.2em] text-foreground-muted">نظر</p>
@@ -236,7 +252,7 @@ export default function InvoicePage({ params }: PageProps) {
             </Card>
           )}
 
-          <Card>
+          <Card className="print:hidden">
             <CardContent className="space-y-3 py-6">
               <div className="flex flex-wrap gap-2">
                 {order.store.trust_badges.length === 0 ? (
