@@ -19,6 +19,7 @@ export type GuestOrderCreate = {
   buyer_address: string;
   buyer_note?: string | null;
   payment_method_id: number;
+  discount_code?: string | null;
   items: OrderItemInput[];
 };
 
@@ -47,7 +48,20 @@ export type CheckoutResponse = {
   order_id: number;
   status: OrderStatus;
   subtotal_amount: string;
+  discount_code?: string | null;
+  discount_amount?: string;
   total_amount: string;
   items: CheckoutOrderItemSummary[];
   payment_method: CheckoutPaymentInstructions;
+};
+
+export type DiscountPreviewRequest = {
+  code: string;
+  subtotal: number | string;
+};
+
+export type DiscountPreviewResponse = {
+  code: string;
+  discount_amount: string;
+  payable_amount: string;
 };

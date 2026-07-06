@@ -11,6 +11,8 @@ import {
 import type { OrderTrackResponse } from "@/types/public/order";
 
 export function InvoiceView({ order }: { order: OrderTrackResponse }) {
+  const hasDiscount = Number(order.discount_amount ?? 0) > 0;
+
   return (
     <div className="invoice-print space-y-6 rounded-xl border border-border bg-surface p-6 sm:p-8">
       <header className="border-b border-border pb-4">
@@ -66,6 +68,12 @@ export function InvoiceView({ order }: { order: OrderTrackResponse }) {
           <p className="text-sm text-foreground-muted">
             جمع جزء: {formatMoney(order.subtotal_amount)}
           </p>
+          {hasDiscount && (
+            <p className="text-sm text-emerald-600">
+              تخفیف{order.discount_code ? " (" + order.discount_code + ")" : ""}:{" "}
+              −{formatMoney(order.discount_amount ?? "0")}
+            </p>
+          )}
           <p className="text-lg font-bold">مجموع: {formatMoney(order.total_amount)}</p>
         </div>
       </div>

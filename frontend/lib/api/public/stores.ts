@@ -1,5 +1,10 @@
 import { apiGet, apiPost } from "@/lib/api/client";
-import type { CheckoutResponse, GuestOrderCreate } from "@/types/public/checkout";
+import type {
+  CheckoutResponse,
+  DiscountPreviewRequest,
+  DiscountPreviewResponse,
+  GuestOrderCreate,
+} from "@/types/public/checkout";
 import type {
   ProductSortKey,
   PublicProductDetailResponse,
@@ -54,4 +59,15 @@ export function createGuestOrder(
   return apiPost<CheckoutResponse>(`/api/v1/public/stores/${slug}/orders`, body, {
     auth: false,
   });
+}
+
+export function previewDiscount(
+  slug: string,
+  body: DiscountPreviewRequest,
+): Promise<DiscountPreviewResponse> {
+  return apiPost<DiscountPreviewResponse>(
+    `/api/v1/public/stores/${slug}/discount-preview`,
+    body,
+    { auth: false },
+  );
 }
