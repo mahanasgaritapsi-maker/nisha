@@ -72,6 +72,8 @@ def track_order(db: Session, invoice_code: str, password: str) -> OrderTrackResp
         buyer_address=order.buyer_address,
         buyer_note=order.buyer_note,
         subtotal_amount=order.subtotal_amount,
+        discount_code=order.discount_code,
+        discount_amount=order.discount_amount,
         total_amount=order.total_amount,
         created_at=order.created_at,
         items=[
