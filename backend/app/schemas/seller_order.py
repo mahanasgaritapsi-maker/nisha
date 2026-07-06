@@ -70,4 +70,3 @@ class SellerOrderActionResponse(BaseModel):
     message: str
     order_id: int
     status: OrderStatus
-}
