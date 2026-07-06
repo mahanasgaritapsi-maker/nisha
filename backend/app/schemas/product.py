@@ -35,6 +35,25 @@ class ProductImageReorderRequest(BaseModel):
     ordered_ids: list[int] = Field(min_length=1)
 
 
+class ProductVariantInput(BaseModel):
+    """Seller-facing input for a product variant (roadmap task 16)."""
+
+    name: str = Field(min_length=1, max_length=255)
+    price_override: Decimal | None = Field(default=None, gt=0)
+    stock_quantity: int = Field(default=0, ge=0)
+    sort_order: int = 0
+    is_active: bool = True
+
+
+class ProductVariantResponse(ProductVariantInput):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    product_id: int
+    created_at: datetime
+    updated_at: datetime
+
+
 class ProductFieldOption(BaseModel):
     label: str = Field(min_length=1, max_length=255)
     value: str = Field(min_length=1, max_length=255)
@@ -85,6 +104,7 @@ class ProductCreate(BaseModel):
     image_urls: list[str] | None = Field(default=None, max_length=MAX_PRODUCT_IMAGES)
     images: list[ProductImageInput] | None = Field(default=None, max_length=MAX_PRODUCT_IMAGES)
     form_fields: list[ProductFormFieldInput] | None = None
+    variants: list[ProductVariantInput] | None = None
 
 
 class ProductUpdate(BaseModel):
@@ -98,6 +118,7 @@ class ProductUpdate(BaseModel):
     image_urls: list[str] | None = Field(default=None, max_length=MAX_PRODUCT_IMAGES)
     images: list[ProductImageInput] | None = Field(default=None, max_length=MAX_PRODUCT_IMAGES)
     form_fields: list[ProductFormFieldInput] | None = None
+    variants: list[ProductVariantInput] | None = None
 
 
 class ProductResponse(BaseModel):
@@ -114,5 +135,6 @@ class ProductResponse(BaseModel):
     video_mime_type: str | None
     images: list[ProductImageResponse]
     form_fields: list[ProductFormFieldResponse]
+    variants: list[ProductVariantResponse] = Field(default_factory=list)
     created_at: datetime
     updated_at: datetime

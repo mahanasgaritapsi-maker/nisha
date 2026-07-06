@@ -46,6 +46,7 @@ class PaymentProofUploadResponse(BaseModel):
 class OrderTrackItemResponse(BaseModel):
     product_id: int | None
     product_title: str
+    variant_name: str | None = None
     quantity: int
     unit_price: Decimal
     total_price: Decimal

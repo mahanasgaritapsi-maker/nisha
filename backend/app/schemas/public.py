@@ -41,6 +41,18 @@ class PublicStoreSocialLink(BaseModel):
     is_active: bool
 
 
+class PublicProductVariant(BaseModel):
+    """Public view of a purchasable product variant (roadmap task 16)."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    price_override: Decimal | None = None
+    stock_quantity: int
+    sort_order: int
+
+
 class PublicProduct(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -53,6 +65,7 @@ class PublicProduct(BaseModel):
     video_mime_type: str | None = None
     images: list[ProductImageResponse]
     form_fields: list[ProductFormFieldResponse]
+    variants: list[PublicProductVariant] = Field(default_factory=list)
     image_count: int = 0
 
 
@@ -173,6 +186,7 @@ class PublicHomepageResponse(BaseModel):
 
 class OrderItemInput(BaseModel):
     product_id: int
+    variant_id: int | None = None
     quantity: int = Field(ge=1)
     field_values: list["OrderItemFieldValueInput"] = Field(default_factory=list)
 
@@ -194,19 +208,21 @@ class GuestOrderCreate(BaseModel):
 
     @model_validator(mode="after")
     def merge_duplicate_products(self) -> "GuestOrderCreate":
-        seen: dict[int, int] = {}
+        seen: dict[tuple[int, int | None], int] = {}
         merged: list[OrderItemInput] = []
         for item in self.items:
-            idx = seen.get(item.product_id)
+            key = (item.product_id, item.variant_id)
+            idx = seen.get(key)
             if idx is not None:
                 existing = merged[idx]
                 merged[idx] = OrderItemInput(
                     product_id=existing.product_id,
+                    variant_id=existing.variant_id,
                     quantity=existing.quantity + item.quantity,
                     field_values=existing.field_values,
                 )
             else:
-                seen[item.product_id] = len(merged)
+                seen[key] = len(merged)
                 merged.append(item)
         self.items = merged
         return self
@@ -214,6 +230,8 @@ class GuestOrderCreate(BaseModel):
 
 class CheckoutOrderItemSummary(BaseModel):
     product_id: int
+    variant_id: int | None = None
+    variant_name: str | None = None
     product_title: str
     quantity: int
     unit_price: Decimal

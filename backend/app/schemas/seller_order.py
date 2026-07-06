@@ -29,6 +29,8 @@ class SellerOrderItemResponse(BaseModel):
 
     id: int
     product_id: int | None
+    variant_id: int | None = None
+    variant_name_snapshot: str | None = None
     product_title_snapshot: str
     unit_price_snapshot: Decimal
     quantity: int
@@ -68,3 +70,4 @@ class SellerOrderActionResponse(BaseModel):
     message: str
     order_id: int
     status: OrderStatus
+}
