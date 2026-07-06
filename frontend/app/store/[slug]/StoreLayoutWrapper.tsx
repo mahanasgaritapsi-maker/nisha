@@ -1,12 +1,41 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import * as storesApi from "@/lib/api/public/stores";
 import { PublicShell } from "@/components/layout/PublicShell";
 import { CartDrawer } from "@/components/store/CartDrawer";
 import { CartProvider, useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
+
+const FOOTER_LINKS = [
+  { href: "/track-order", label: "پیگیری سفارش" },
+  { href: "/terms", label: "قوانین و مقررات" },
+  { href: "/privacy", label: "حریم خصوصی" },
+  { href: "/complaints", label: "رویه رسیدگی به شکایت" },
+];
+
+function StoreFooter() {
+  return (
+    <footer className="mt-10 border-t border-border pb-4 pt-6">
+      <div className="flex flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:justify-between sm:text-start">
+        <p className="text-xs text-foreground-muted">این فروشگاه روی نیشا میزبانی می‌شود.</p>
+        <nav aria-label="لینک‌های حقوقی" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+          {FOOTER_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-xs text-foreground-muted transition-colors hover:text-foreground hover:underline"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+      </div>
+    </footer>
+  );
+}
 
 function StoreCartButton({
   onClick,
@@ -72,6 +101,7 @@ function StoreShellInner({
         <div className="min-w-0 flex-1">{children}</div>
         <CartDrawer open={cartOpen} slug={slug} onClose={() => setCartOpen(false)} />
       </div>
+      <StoreFooter />
     </PublicShell>
   );
 }
