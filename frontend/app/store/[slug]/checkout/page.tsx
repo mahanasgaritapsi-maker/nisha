@@ -141,6 +141,18 @@ export default function CheckoutPage({ params }: PageProps) {
 
   const productsById = useMemo(() => new Map(storeProducts.map((product) => [product.id, product])), [storeProducts]);
 
+  // Roadmap task 16: one entry per product for custom-field forms, even when the
+  // cart has several variant lines of the same product.
+  const uniqueProductLines = useMemo(() => {
+    const seen = new Map<number, (typeof items)[number]>();
+    for (const line of items) {
+      if (!seen.has(line.productId)) {
+        seen.set(line.productId, line);
+      }
+    }
+    return Array.from(seen.values());
+  }, [items]);
+
   const discountAmount = appliedDiscount ? parseFloat(appliedDiscount.discount_amount) : 0;
   const payableTotal = Math.max(subtotal - discountAmount, 0);
 
@@ -331,7 +343,7 @@ export default function CheckoutPage({ params }: PageProps) {
 
   function validateFields(): boolean {
     const errors: Record<string, string> = {};
-    for (const item of items) {
+    for (const item of uniqueProductLines) {
       const product = productsById.get(item.productId);
       if (!product) continue;
       const drafts = fieldState[item.productId] ?? {};
@@ -372,6 +384,7 @@ export default function CheckoutPage({ params }: PageProps) {
         discount_code: appliedDiscount ? appliedDiscount.code : null,
         items: items.map((item) => ({
           product_id: item.productId,
+          variant_id: item.variantId ?? null,
           quantity: item.quantity,
           field_values: buildLineItemFieldValues(item.productId),
         })),
@@ -478,11 +491,13 @@ export default function CheckoutPage({ params }: PageProps) {
         <CardContent className="space-y-3">
           {items.map((item) => {
             const product = productsById.get(item.productId);
+            const lineKey = `${item.productId}-${item.variantId ?? "base"}`;
             return (
-              <div key={item.productId} className="space-y-2 rounded-2xl border border-border p-4">
+              <div key={lineKey} className="space-y-2 rounded-2xl border border-border p-4">
                 <div className="flex justify-between text-sm">
                   <span>
-                    {item.title} × {item.quantity}
+                    {item.title}
+                    {item.variantName ? ` — ${item.variantName}` : ""} × {item.quantity}
                   </span>
                   <span>{formatMoney(parseFloat(item.price) * item.quantity)}</span>
                 </div>
@@ -545,13 +560,13 @@ export default function CheckoutPage({ params }: PageProps) {
       <form id="checkout-form" onSubmit={handleSubmit} className="space-y-6">
         {error && <ErrorAlert message={error} />}
 
-        {items.some((item) => (productsById.get(item.productId)?.form_fields.length ?? 0) > 0) && (
+        {uniqueProductLines.some((item) => (productsById.get(item.productId)?.form_fields.length ?? 0) > 0) && (
           <Card>
             <CardHeader>
               <CardTitle>گزینه‌های محصول</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {items.map((item) => {
+              {uniqueProductLines.map((item) => {
                 const product = productsById.get(item.productId);
                 if (!product || product.form_fields.length === 0) return null;
                 const drafts = fieldState[item.productId] ?? {};
