@@ -12,9 +12,11 @@ export default function SellerAppLayout({ children }: { children: React.ReactNod
 
   const navItems = [
     { href: paths.seller.dashboard, label: "داشبورد", description: "سفارش‌ها، درآمد، و فعالیت‌ها" },
+    { href: paths.seller.analytics, label: "آمار فروش", description: "فروش، بازدید و نرخ تبدیل" },
     { href: paths.seller.store, label: "فروشگاه", description: "پروفایل و تنظیمات عمومی" },
     { href: paths.seller.products, label: "محصولات", description: "کاتالوگ و فرم‌های محصول" },
     { href: paths.seller.orders, label: "سفارش‌ها", description: "ارسال و تغییر وضعیت" },
+    { href: paths.seller.discounts, label: "تخفیف‌ها", description: "کدهای تخفیف فروشگاه" },
     { href: paths.seller.conversations, label: "گفتگوها", description: "پیام‌های مشتری و مهمان" },
     { href: paths.seller.paymentMethods, label: "پرداخت‌ها", description: "تنظیمات دریافت و پرداخت" },
   ];

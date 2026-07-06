@@ -12,6 +12,7 @@ export default function AdminAppLayout({ children }: { children: React.ReactNode
     { href: paths.admin.dashboard, label: "داشبورد", description: "نمای کلی پلتفرم" },
     { href: paths.admin.orders, label: "سفارش‌ها", description: "جستجو و مدیریت سفارش‌ها" },
     { href: paths.admin.stores, label: "فروشگاه‌ها", description: "تایید و تعلیق فروشگاه‌ها" },
+    { href: paths.admin.complaints, label: "شکایت‌ها", description: "رسیدگی به شکایت خریداران" },
     { href: paths.admin.reviews, label: "نظرات", description: "مدیریت نظرات عمومی" },
     { href: paths.admin.chats, label: "گفتگوها", description: "گفتگوهای سراسری سفارش‌ها" },
   ];

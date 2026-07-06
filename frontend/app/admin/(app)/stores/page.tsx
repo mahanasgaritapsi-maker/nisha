@@ -1,10 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useState, type FormEvent } from "react";
 import * as storesApi from "@/lib/api/admin/stores";
+import * as supportApi from "@/lib/api/admin/support";
 import { paths } from "@/lib/auth/paths";
 import { formatDateTime } from "@/lib/format";
+import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
 import { useSellerFetch } from "@/hooks/useSellerFetch";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -31,6 +34,8 @@ type DraftFilters = {
 
 export default function AdminStoresPage() {
   const toast = useToast();
+  const router = useRouter();
+  const { setSession } = useAuth();
   const [page, setPage] = useState(1);
   const [actionId, setActionId] = useState<number | null>(null);
   const [filters, setFilters] = useState<DraftFilters>({ search: "" });
@@ -63,6 +68,19 @@ export default function AdminStoresPage() {
     } catch {
       toast.error("به‌روزرسانی فروشگاه ناموفق بود");
     } finally {
+      setActionId(null);
+    }
+  }
+
+  async function impersonate(storeId: number) {
+    setActionId(storeId);
+    try {
+      const session = await supportApi.impersonateStore(storeId);
+      setSession(session.access_token, session.user);
+      toast.success("با حساب فروشنده وارد شدید");
+      router.push(paths.seller.dashboard);
+    } catch {
+      toast.error("ورود به‌جای فروشنده ناموفق بود");
       setActionId(null);
     }
   }
@@ -161,6 +179,14 @@ export default function AdminStoresPage() {
                         onClick={() => runAction(store.id, store.is_active ? "suspend" : "approve")}
                       >
                         {store.is_active ? "تعلیق" : "تایید"}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        disabled={actionId === store.id}
+                        onClick={() => impersonate(store.id)}
+                      >
+                        ورود به‌جای فروشنده
                       </Button>
                       <Link
                         href={paths.admin.storeBadges(store.id)}
