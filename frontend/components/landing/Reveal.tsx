@@ -54,7 +54,8 @@ export function Reveal({
           ? "translate-x-8"
           : "";
 
-  const style: CSSProperties = delay > 0 ? { transitionDelay: delay + "ms" } : undefined ?? undefined;
+  const style: CSSProperties | undefined =
+    delay > 0 ? { transitionDelay: delay + "ms" } : undefined;
 
   return (
     <div
