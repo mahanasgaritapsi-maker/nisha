@@ -14,6 +14,7 @@ import type {
   ProductFormFieldInput,
   ProductImageInput,
   ProductUpdate,
+  ProductVariantInput,
 } from "@/types/seller/product";
 
 type ProductFormProps = {
@@ -24,6 +25,13 @@ type ProductFormProps = {
 
 type EditableImage = ProductImageInput & { clientKey: string };
 type EditableField = ProductFormFieldInput & { clientKey: string; optionsText: string; validationText: string };
+type EditableVariant = {
+  clientKey: string;
+  name: string;
+  priceOverride: string;
+  stockQuantity: string;
+  isActive: boolean;
+};
 
 const MAX_IMAGES = 8;
 const MAX_VIDEO_BYTES = 52_428_800; // 50MB — must match MAX_VIDEO_UPLOAD_SIZE_BYTES in the backend
@@ -78,6 +86,16 @@ function normalizeFields(fields: Product["form_fields"]): EditableField[] {
   }));
 }
 
+function normalizeVariants(variants: Product["variants"]): EditableVariant[] {
+  return (variants ?? []).map((variant, index) => ({
+    clientKey: `${variant.id}-${index}`,
+    name: variant.name,
+    priceOverride: variant.price_override ?? "",
+    stockQuantity: String(variant.stock_quantity),
+    isActive: variant.is_active,
+  }));
+}
+
 function emptyImage(): EditableImage {
   return {
     clientKey: crypto.randomUUID(),
@@ -103,6 +121,16 @@ function emptyField(): EditableField {
     help_text: "",
     optionsText: "",
     validationText: "",
+  };
+}
+
+function emptyVariant(): EditableVariant {
+  return {
+    clientKey: crypto.randomUUID(),
+    name: "",
+    priceOverride: "",
+    stockQuantity: "0",
+    isActive: true,
   };
 }
 
@@ -142,6 +170,9 @@ export function ProductForm({
   const [fields, setFields] = useState<EditableField[]>(
     initial ? normalizeFields(initial.form_fields) : [],
   );
+  const [variants, setVariants] = useState<EditableVariant[]>(
+    initial ? normalizeVariants(initial.variants) : [],
+  );
   const [videoUrl, setVideoUrl] = useState(initial?.video_url ?? "");
   const [videoMimeType, setVideoMimeType] = useState(initial?.video_mime_type ?? "");
   const [videoError, setVideoError] = useState<string | null>(null);
@@ -161,6 +192,7 @@ export function ProductForm({
     setIsActive(initial?.is_active ?? true);
     setImages(initial && initial.images.length > 0 ? normalizeImages(initial.images) : [emptyImage()]);
     setFields(initial ? normalizeFields(initial.form_fields) : []);
+    setVariants(initial ? normalizeVariants(initial.variants) : []);
     setVideoUrl(initial?.video_url ?? "");
     setVideoMimeType(initial?.video_mime_type ?? "");
   }, [initial]);
@@ -175,12 +207,20 @@ export function ProductForm({
     setFields((prev) => prev.map((field, i) => (i === index ? { ...field, ...patch } : field)));
   }
 
+  function setVariant(index: number, patch: Partial<EditableVariant>) {
+    setVariants((prev) => prev.map((variant, i) => (i === index ? { ...variant, ...patch } : variant)));
+  }
+
   function removeImage(index: number) {
     setImages((prev) => prev.filter((_, i) => i !== index));
   }
 
   function removeField(index: number) {
     setFields((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function removeVariant(index: number) {
+    setVariants((prev) => prev.filter((_, i) => i !== index));
   }
 
   function handleImageDrop(targetIndex: number) {
@@ -336,6 +376,39 @@ export function ProductForm({
       return;
     }
 
+    let payloadVariants: ProductVariantInput[];
+    try {
+      payloadVariants = variants.map((variant, index) => {
+        const name = variant.name.trim();
+        if (!name) {
+          throw new Error("هر واریانت به یک نام نیاز دارد.");
+        }
+        const overrideText = variant.priceOverride.trim();
+        let priceOverride: number | null = null;
+        if (overrideText) {
+          const parsed = parseFloat(overrideText);
+          if (Number.isNaN(parsed) || parsed <= 0) {
+            throw new Error(`قیمت واریانت ${name} باید بزرگ‌تر از 0 باشد.`);
+        }
+        priceOverride = parsed;
+        }
+        const stockParsed = parseInt(variant.stockQuantity, 10);
+        if (Number.isNaN(stockParsed) || stockParsed < 0) {
+          throw new Error(`موجودی واریانت ${name} باید 0 یا بیشتر باشد.`);
+        }
+        return {
+          name,
+          price_override: priceOverride,
+          stock_quantity: stockParsed,
+          sort_order: index,
+          is_active: variant.isActive,
+        };
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "پیکربندی واریانت نامعتبر است");
+      return;
+    }
+
     setLoading(true);
     try {
       await onSubmit({
@@ -348,6 +421,7 @@ export function ProductForm({
         video_mime_type: videoUrl.trim() ? videoMimeType.trim() || null : null,
         images: payloadImages.length > 0 ? payloadImages : null,
         form_fields: payloadFields.length > 0 ? payloadFields : null,
+        variants: payloadVariants.length > 0 ? payloadVariants : null,
       });
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "ذخیره ناموفق بود");
@@ -420,6 +494,80 @@ export function ProductForm({
           <section className="space-y-4">
             <div className="flex items-center justify-between gap-3">
               <div>
+                <p className="text-xs tracking-[0.2em] text-foreground-muted">واریانت‌ها</p>
+                <p className="text-sm text-foreground-muted">
+                  مانند سایز یا رنگ. اگر قیمت واریانت را خالی بگذارید، قیمت اصلی محصول اعمال می‌شود. با وجود واریانت فعال، موجودی کل محصول برابر مجموع موجودی واریانت‌های فعال محاسبه می‌شود و خریدار باید حتما یک واریانت انتخاب کند.
+                </p>
+              </div>
+              <Button type="button" variant="secondary" onClick={() => setVariants((prev) => [...prev, emptyVariant()])}>
+                افزودن واریانت
+              </Button>
+            </div>
+            <div className="space-y-4">
+              {variants.length === 0 ? (
+                <p className="text-sm text-foreground-muted">این محصول بدون واریانت فروخته می‌شود.</p>
+              ) : (
+                variants.map((variant, index) => (
+                  <div key={variant.clientKey} className="rounded-2xl border border-border p-4">
+                    <div className="grid gap-4 md:grid-cols-3">
+                      <Input
+                        label="نام واریانت"
+                        value={variant.name}
+                        onChange={(e) => setVariant(index, { name: e.target.value })}
+                        placeholder="مثلا سایز L"
+                      />
+                      <Input
+                        label="قیمت واریانت (اختیاری)"
+                        type="number"
+                        min="1"
+                        step="1"
+                        value={variant.priceOverride}
+                        onChange={(e) => setVariant(index, { priceOverride: e.target.value })}
+                        placeholder="خالی = قیمت اصلی"
+                      />
+                      <Input
+                        label="موجودی واریانت"
+                        type="number"
+                        min="0"
+                        value={variant.stockQuantity}
+                        onChange={(e) => setVariant(index, { stockQuantity: e.target.value })}
+                      />
+                    </div>
+                    <div className="mt-3 flex flex-wrap items-center gap-3">
+                      <label htmlFor={`variant-active-${variant.clientKey}`} className="flex items-center gap-2 text-sm text-foreground">
+                        <input
+                          id={`variant-active-${variant.clientKey}`}
+                          type="checkbox"
+                          checked={variant.isActive}
+                          onChange={(e) => setVariant(index, { isActive: e.target.checked })}
+                        />
+                        فعال
+                      </label>
+                      <Button type="button" variant="ghost" size="sm" onClick={() => setVariants((prev) => moveItem(prev, index, -1))} disabled={index === 0}>
+                        بالا
+                      </Button>
+                      <Button type="button" variant="ghost" size="sm" onClick={() => setVariants((prev) => moveItem(prev, index, 1))} disabled={index === variants.length - 1}>
+                        پایین
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
+                        onClick={() => removeVariant(index)}
+                      >
+                        حذف
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </section>
+
+          <section className="space-y-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
                 <p className="text-xs tracking-[0.2em] text-foreground-muted">گالری</p>
                 <p className="text-sm text-foreground-muted">
                   تا ۸ تصویر بارگذاری کنید و با کشیدن کارت‌ها (یا دکمه‌های بالا/پایین) ترتیب گالری را مشخص کنید؛ تصویر اول، تصویر اصلی است.
@@ -458,7 +606,7 @@ export function ProductForm({
                       title="برای جابه‌جایی بکشید"
                       className="flex cursor-grab items-center justify-center gap-1 rounded-lg border border-dashed border-border px-2 py-1 text-xs text-foreground-muted active:cursor-grabbing"
                     >
-                      ⠿ کشیدن برای جابه‌جایی
+                      ⡀⣿ کشیدن برای جابه‌جایی
                     </div>
                     <div className="aspect-square overflow-hidden rounded-xl bg-surface-muted">
                       {image.image_url ? (
